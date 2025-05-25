@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const usuarioRoute = require("./routes/usuarios");
 const ubicacionesRoute = require("./routes/ubicaciones");
 const lineasRoute = require("./routes/lineas");
+const geoRoute = require("./routes/geo");
 
 const PORT = 8800;
 const app = express();
@@ -13,6 +14,7 @@ dotenv.config();
 app.use("/api/usuarios", usuarioRoute);
 app.use("/api/ubicaciones", ubicacionesRoute);
 app.use("/api/lineas", lineasRoute);
+app.use("/api/geo", geoRoute);
 
 mongoose
   .connect(process.env.MONGO_URL)
