@@ -1,4 +1,5 @@
 const Ubicacion = require("../models/Ubicacion");
+const { successResponse, errorResponse } = require("../utils/response");
 
 async function findClosestPoints(req, res) {
   try {
@@ -15,9 +16,14 @@ async function findClosestPoints(req, res) {
       },
     }).limit(resultQty);
 
-    res.status(200).json(closestPoints);
+    return successResponse(
+      res,
+      200,
+      "Punto(s) cercano(s) encontrado(s)",
+      closestPoints
+    );
   } catch (err) {
-    res.status(500).json({ err: err.message });
+    return errorResponse(res, 500, "Error interno del servidor", err.message);
   }
 }
 

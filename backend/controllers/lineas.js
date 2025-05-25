@@ -1,14 +1,14 @@
 const Linea = require("../models/Linea");
 const Ubicacion = require("../models/Ubicacion");
 
+const { successResponse, errorResponse } = require("../utils/response");
+
 async function createLinea(req, res) {
   try {
     const { numero, sindicato, puntos } = req.body;
 
     if (!numero || !Array.isArray(puntos) || puntos.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "Numero de linea y puntos son requeridos." });
+      return errorResponse(res, 400, "Numero de Linea y puntos son requeridos");
     }
 
     // Create Ubicaciones
@@ -26,12 +26,17 @@ async function createLinea(req, res) {
       puntos: pointIds,
     });
 
-    res
-      .status(200)
-      .json({ message: "Linea creada exitosamente", linea: addedLine });
+    return successResponse(res, 201, "Linea creada exitosamente", {
+      linea: addedLine,
+    });
   } catch (err) {
     console.log("Error en la creación de la Linea.");
-    res.status(500).json(err);
+    return errorResponse(
+      res,
+      500,
+      "Error en la creación de la Linea",
+      err.message
+    );
   }
 }
 
@@ -57,9 +62,7 @@ async function findCloseLinesToPoint(req, res) {
   try {
     const { lat, long } = req.body;
     if (typeof lat !== "number" || typeof long !== "number") {
-      return res
-        .status(400)
-        .json({ error: "Latitud y longitud deben ser numeros" });
+      return errorResponse(res, 400, "Latitud y longitud deben ser numeros");
     }
 
     // Check if point exists
@@ -82,20 +85,19 @@ async function findCloseLinesToPoint(req, res) {
 
     // No point found
     if (!point) {
-      return res.status(400).json({ error: "No se hallaron puntos cercanos" });
+      return errorResponse(res, 400, "No se hallaron puntos cercanos");
     }
 
     // Point found search Lineas
     const lines = await Linea.find({ puntos: point._id });
 
-    res.status(200).json({
-      message: "Lineas encontradas cercanas al punto",
+    return successResponse(res, 200, "Lineas encontradas cercanas al punto", {
       closestPoint: point,
       lines,
     });
   } catch (err) {
     console.error("Error in findCloseLInesToPoint", err);
-    res.status(500), json({ error: err.message });
+    return res.status(res, 500, "Error interno del servidor", err.message);
   }
 }
 
