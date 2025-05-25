@@ -1,6 +1,11 @@
-const router = require("express").Router();
 const Linea = require("../models/Linea");
+const { createLinea } = require("../controllers/lineas");
 
+const router = require("express").Router();
+
+router.post("/add", createLinea);
+
+// Testing
 router.post("/", async (req, res) => {
   const newLinea = new Linea(req.body);
   try {
