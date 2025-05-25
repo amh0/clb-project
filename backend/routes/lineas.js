@@ -5,6 +5,8 @@ const router = require("express").Router();
 
 router.post("/add", createLinea);
 
+router.get("/find-close-to-point", findClosestLineToPoint);
+
 // Testing
 router.post("/", async (req, res) => {
   const newLinea = new Linea(req.body);

@@ -36,16 +36,23 @@ async function createLinea(req, res) {
 }
 
 async function findOrCreateUbicacion(point) {
+  const { lat, long } = point;
   let existingPoint = await Ubicacion.findOne({
-    lat: point.lat,
-    long: point.long,
+    lat,
+    long,
   });
 
   if (!existingPoint) {
-    existingPoint = await Ubicacion.create(point);
+    existingPoint = await Ubicacion.create({
+      lat,
+      long,
+      location: { type: "Point", coordinates: [long, lat] },
+    });
   }
 
   return existingPoint;
 }
+
+async function findCloseLinesToPoint(req, res) {}
 
 module.exports = { createLinea };
