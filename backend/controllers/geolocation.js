@@ -1,17 +1,4 @@
 const Ubicacion = require("../models/Ubicacion");
-const sphereKnn = require("sphere-knn");
-
-// let lookup    = sphereKnn([
-//       /* This array needs to be full of objects that have latitudes and
-//        * longitudes. Accepted property names are "lat", "latitude", "lon",
-//        * "lng", "long", "longitude". */
-//       {lat: ..., lon: ...},
-
-//       /* You can also use an array. */
-//       [my_lat, my_lon],
-
-//       ...
-//     ])
 
 function geoToArray(geolocations) {
   const array = [];
@@ -32,8 +19,8 @@ async function findClosestPoints(req, res) {
 
     const points = lookup(lat, long, resultQty);
     res.status(200).json(points);
-  } catch {
-    res.status(500).json(err);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
   }
 }
 
