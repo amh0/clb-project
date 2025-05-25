@@ -12,6 +12,19 @@ const UbicacionSchema = new mongoose.Schema({
     type: Number,
     require: true,
   },
+  location: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
 });
+
+UbicacionSchema.index({ location: "2dshpere" });
 
 module.exports = mongoose.model("Ubicacion", UbicacionSchema, "Ubicaciones");
