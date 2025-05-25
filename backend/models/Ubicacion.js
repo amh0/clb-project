@@ -12,7 +12,6 @@ const UbicacionSchema = new mongoose.Schema({
     type: Number,
     require: true,
   },
-  lineas: [mongoose.ObjectId],
 });
 
 module.exports = mongoose.model("Ubicacion", UbicacionSchema, "Ubicaciones");
