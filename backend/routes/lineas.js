@@ -1,11 +1,11 @@
 const Linea = require("../models/Linea");
-const { createLinea } = require("../controllers/lineas");
+const { createLinea, findCloseLinesToPoint } = require("../controllers/lineas");
 
 const router = require("express").Router();
 
 router.post("/add", createLinea);
 
-router.get("/find-close-to-point", findClosestLineToPoint);
+router.get("/find-close-to-point", findCloseLinesToPoint);
 
 // Testing
 router.post("/", async (req, res) => {

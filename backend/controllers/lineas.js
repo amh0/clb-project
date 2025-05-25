@@ -55,4 +55,4 @@ async function findOrCreateUbicacion(point) {
 
 async function findCloseLinesToPoint(req, res) {}
 
-module.exports = { createLinea };
+module.exports = { createLinea, findCloseLinesToPoint };
