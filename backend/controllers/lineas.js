@@ -53,6 +53,50 @@ async function findOrCreateUbicacion(point) {
   return existingPoint;
 }
 
-async function findCloseLinesToPoint(req, res) {}
+async function findCloseLinesToPoint(req, res) {
+  try {
+    const { lat, long } = req.body;
+    if (typeof lat !== "number" || typeof long !== "number") {
+      return res
+        .status(400)
+        .json({ error: "Latitud y longitud deben ser numeros" });
+    }
+
+    // Check if point exists
+    let point = await Ubicacion.findOne({ lat, long });
+
+    // Query closest Point
+    if (!point) {
+      point = await Ubicacion.findOne({
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [long, lat],
+            },
+            // $maxDistance: 1000
+          },
+        },
+      });
+    }
+
+    // No point found
+    if (!point) {
+      return res.status(400).json({ error: "No se hallaron puntos cercanos" });
+    }
+
+    // Point found search Lineas
+    const lines = await Linea.find({ puntos: point._id });
+
+    res.status(200).json({
+      message: "Lineas encontradas cercanas al punto",
+      closestPoint: point,
+      lines,
+    });
+  } catch (err) {
+    console.error("Error in findCloseLInesToPoint", err);
+    res.status(500), json({ error: err.message });
+  }
+}
 
 module.exports = { createLinea, findCloseLinesToPoint };
