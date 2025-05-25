@@ -12,14 +12,18 @@ async function createLinea(req, res) {
     }
 
     // Create Ubicaciones
-    const createdPoints = await Ubicacion.insertMany(puntos);
+    const createdPoints = await Promise.all(
+      puntos.map(async (point) => {
+        return await findOrCreateUbicacion(point);
+      })
+    );
     const pointIds = createdPoints.map((p) => p._id);
 
     // Create Linea
     const addedLine = await Linea.create({
       numero,
       sindicato,
-      point_ids: pointIds,
+      puntos: pointIds,
     });
 
     res
@@ -29,6 +33,19 @@ async function createLinea(req, res) {
     console.log("Error en la creación de la Linea.");
     res.status(500).json(err);
   }
+}
+
+async function findOrCreateUbicacion(point) {
+  let existingPoint = await Ubicacion.findOne({
+    lat: point.lat,
+    long: point.long,
+  });
+
+  if (!existingPoint) {
+    existingPoint = await Ubicacion.create(point);
+  }
+
+  return existingPoint;
 }
 
 module.exports = { createLinea };
