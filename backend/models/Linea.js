@@ -7,9 +7,10 @@ const LineaSchema = new mongoose.Schema({
   },
   sindicato: {
     type: String,
-    require: true,
+    require: false,
   },
-  trayectoria: [mongoose.ObjectId],
+
+  puntos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ubicacion" }],
 });
 
 module.exports = mongoose.model("Linea", LineaSchema, "Lineas");
