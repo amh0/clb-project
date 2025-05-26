@@ -3,6 +3,23 @@ const Ubicacion = require("../models/Ubicacion");
 
 const { successResponse, errorResponse } = require("../utils/response");
 
+async function getAll(req, res) {
+  try {
+    const lines = await Linea.find();
+    return successResponse(res, 200, "Lineas obtenidas", {
+      lineas: lines,
+    });
+  } catch (err) {
+    console.log("Error en la creación de la Linea.");
+    return errorResponse(
+      res,
+      500,
+      "Error en la creación de la Linea",
+      err.message
+    );
+  }
+}
+
 async function createLinea(req, res) {
   try {
     const { numero, sindicato, puntos } = req.body;
@@ -92,8 +109,8 @@ async function findCloseLinesToPoint(req, res) {
     const lines = await Linea.find({ puntos: point._id });
 
     return successResponse(res, 200, "Lineas encontradas cercanas al punto", {
-      closestPoint: point,
-      lines,
+      puntoMasCercano: point,
+      lineas: lines,
     });
   } catch (err) {
     console.error("Error in findCloseLInesToPoint", err);
@@ -101,4 +118,4 @@ async function findCloseLinesToPoint(req, res) {
   }
 }
 
-module.exports = { createLinea, findCloseLinesToPoint };
+module.exports = { createLinea, findCloseLinesToPoint, getAll };
