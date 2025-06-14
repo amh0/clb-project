@@ -1,22 +1,22 @@
 const mongoose = require("mongoose");
 
-const LineaSchema = new mongoose.Schema({
-  numero: {
+const LineSchema = new mongoose.Schema({
+  number: {
     type: Number,
     required: true,
   },
-  sindicato: {
+  syndicate: {
     type: String,
     required: false,
   },
 
-  puntos: [
+  points: [
     {
       lat: {
         type: Number,
         required: true,
       },
-      long: {
+      lon: {
         type: Number,
         required: true,
       },
@@ -24,7 +24,7 @@ const LineaSchema = new mongoose.Schema({
   ],
 });
 
-// Speed up queries of lat long
-LineaSchema.index({ "puntos.lat": 1, "puntos.long": 1 });
+// Speed up queries of lat lon
+LineSchema.index({ "puntos.lat": 1, "puntos.lon": 1 });
 
-module.exports = mongoose.model("Linea", LineaSchema, "Lineas");
+module.exports = mongoose.model("Line", LineSchema, "Lines");
