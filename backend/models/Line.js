@@ -20,11 +20,12 @@ const LineSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      type: { type: String, enum: ["Point"], required: true },
+      coordinates: { type: ["Number"], required: true },
     },
   ],
 });
 
-// Speed up queries of lat lon
-LineSchema.index({ "puntos.lat": 1, "puntos.lon": 1 });
+LineSchema.index({ "points.coordinates": "2dsphere" });
 
 module.exports = mongoose.model("Line", LineSchema, "Lines");
