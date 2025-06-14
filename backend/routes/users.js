@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const Usuario = require("../models/Usuario");
+const User = require("../models/User");
 
 router.post("/", async (req, res) => {
-  const newUsuario = new Usuario(req.body);
+  const newUser = new User(req.body);
   try {
-    const savedUsuario = await newUsuario.save();
-    res.status(200).json(savedUsuario);
+    const savedUser = await newUser.save();
+    res.status(200).json(savedUser);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -13,8 +13,8 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const usuarios = await Usuario.find();
-    res.status(200).json(usuarios);
+    const users = await User.find();
+    res.status(200).json(users);
   } catch {
     res.status(500).json(err);
   }

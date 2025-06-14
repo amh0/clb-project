@@ -1,16 +1,16 @@
-const Ubicacion = require("../models/Ubicacion");
+const Point = require("../models/Point");
 const { successResponse, errorResponse } = require("../utils/response");
 
 async function findClosestPoints(req, res) {
   try {
-    const { lat, long, resultQty = 1 } = req.body;
+    const { lat, lon, resultQty = 1 } = req.body;
 
-    const closestPoints = await Ubicacion.find({
+    const closestPoints = await Point.find({
       location: {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: [long, lat],
+            coordinates: [lon, lat],
           },
         },
       },

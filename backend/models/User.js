@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const UsuarioSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
-    nombreCompleto: {
+    fullName: {
       type: String,
       require: true,
       max: 40,
@@ -12,13 +12,13 @@ const UsuarioSchema = new mongoose.Schema(
       require: true,
       max: 50,
     },
-    nombreUsuario: {
+    userName: {
       type: String,
       require: true,
       max: 40,
       unique: true,
     },
-    contrasenia: {
+    password: {
       type: String,
       require: true,
       min: 6,
@@ -27,4 +27,4 @@ const UsuarioSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Usuario", UsuarioSchema, "Usuarios");
+module.exports = mongoose.model("User", UserSchema, "Users");

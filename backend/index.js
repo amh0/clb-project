@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const usuarioRoute = require("./routes/usuarios");
-const ubicacionesRoute = require("./routes/ubicaciones");
-const lineasRoute = require("./routes/lineas");
+const userRoute = require("./routes/users");
+const pointsRoute = require("./routes/points");
+const linesRoute = require("./routes/lines");
 const geoRoute = require("./routes/geo");
 
 const PORT = 8800;
@@ -11,9 +11,9 @@ const app = express();
 app.use(express.json());
 dotenv.config();
 
-app.use("/api/usuarios", usuarioRoute);
-app.use("/api/ubicaciones", ubicacionesRoute);
-app.use("/api/lineas", lineasRoute);
+app.use("/api/users", userRoute);
+app.use("/api/points", pointsRoute);
+app.use("/api/lines", linesRoute);
 app.use("/api/geo", geoRoute);
 
 mongoose
@@ -24,5 +24,5 @@ mongoose
   .catch((err) => console.log(err));
 
 app.listen(PORT, () => {
-  console.log("Backend server is running...");
+  console.log("Backend server running on: ", PORT);
 });
