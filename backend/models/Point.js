@@ -1,16 +1,13 @@
 const mongoose = require("mongoose");
 
-const PointsSchema = new mongoose.Schema({
-  desc: {
-    type: String,
-  },
+const PointSchema = new mongoose.Schema({
   lat: {
     type: Number,
-    require: true,
+    required: true,
   },
   lon: {
     type: Number,
-    require: true,
+    required: true,
   },
   location: {
     type: {
@@ -25,6 +22,7 @@ const PointsSchema = new mongoose.Schema({
   },
 });
 
-UbicacionSchema.index({ location: "2dsphere" });
+PointSchema.index({ lat: 1, lon: 1 }, { unique: true });
+PointSchema.index({ location: "2dsphere" });
 
-module.exports = mongoose.model("Point", PointsSchema, "Points");
+module.exports = mongoose.model("Point", PointSchema, "Points");
