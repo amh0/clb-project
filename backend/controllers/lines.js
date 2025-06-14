@@ -1,5 +1,5 @@
 const Line = require("../models/Line");
-const Ubicacion = require("../models/Point");
+const pointsController = require("./points");
 
 const { successResponse, errorResponse } = require("../utils/response");
 
@@ -28,19 +28,25 @@ async function createLine(req, res) {
       return errorResponse(res, 400, "Numero de Linea y puntos son requeridos");
     }
 
-    // Create Ubicaciones
-    const createdPoints = await Promise.all(
+    // Add points to DB
+    await Promise.all(
       points.map(async (point) => {
-        return await findOrCreateUbicacion(point);
+        return await pointsController.findOrCreatePoint(point);
       })
     );
-    const pointIds = createdPoints.map((p) => p._id);
+    // Points to add
+    const addedPoints = points.map((point) => ({
+      lat: point.lat,
+      lon: point.lon,
+      type: "Point",
+      coordinates: [point.lon, point.lat],
+    }));
 
     // Create Line
     const addedLine = await Line.create({
       number,
       syndicate,
-      points: pointIds,
+      points: addedPoints,
     });
 
     return successResponse(res, 201, "Linea creada exitosamente", {
@@ -57,59 +63,33 @@ async function createLine(req, res) {
   }
 }
 
-async function findOrCreateUbicacion(point) {
-  const { lat, lon } = point;
-  let existingPoint = await Ubicacion.findOne({
-    lat,
-    lon,
-  });
-
-  if (!existingPoint) {
-    existingPoint = await Ubicacion.create({
-      lat,
-      lon,
-      location: { type: "Point", coordinates: [lon, lat] },
-    });
-  }
-
-  return existingPoint;
-}
-
-async function findCloseLinesToPoint(req, res) {
+async function linesNearPoint(req, res) {
   try {
     const { lat, lon } = req.body;
     if (typeof lat !== "number" || typeof lon !== "number") {
       return errorResponse(res, 400, "Latitud y longitud deben ser numeros");
     }
 
-    // Check if point exists
-    let point = await Ubicacion.findOne({ lat, lon });
-
-    // Query closest Point
-    if (!point) {
-      point = await Ubicacion.findOne({
-        location: {
-          $near: {
-            $geometry: {
-              type: "Point",
-              coordinates: [lon, lat],
+    // Find lines that are within specified radius to the point
+    const lines = await Line.find({
+      points: {
+        $elemMatch: {
+          coordinates: {
+            $geoWithin: {
+              $centerSphere: [[lon, lat], 0.01], // 1km radius
             },
-            // $maxDistance: 1000
           },
         },
-      });
-    }
+      },
+    });
 
     // No point found
-    if (!point) {
-      return errorResponse(res, 400, "No se hallaron puntos cercanos");
+    if (lines.length === 0) {
+      return errorResponse(res, 400, "No se hallaron lineas cercanas al punto");
     }
 
     // Point found search Lines
-    const lines = await Line.find({ points: point._id });
-
     return successResponse(res, 200, "Lineas encontradas cercanas al punto", {
-      closestPoint: point,
       lines,
     });
   } catch (err) {
@@ -118,4 +98,4 @@ async function findCloseLinesToPoint(req, res) {
   }
 }
 
-module.exports = { createLine, findCloseLinesToPoint, getAll };
+module.exports = { createLine, linesNearPoint, getAll };
