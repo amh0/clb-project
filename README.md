@@ -38,7 +38,7 @@ npm install
 Crea un archivo .env en la carpeta /backend con el siguiente contenido:
 
 ```ini
-MONGODB_URI=<tu-uri-de-mongodb>
+MONGODB_URL=<tu-uri-de-mongodb>
 ```
 
 ### Ejecución del Servidor
