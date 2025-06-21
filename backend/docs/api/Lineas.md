@@ -1,36 +1,59 @@
 # 🚍 API - Líneas de Transporte
 
-## POST `/api/lineas/add`
+## Respuestas del API
+
+Todas las respuestas que retorna el API tienen el siguiente formato:
+
+| Campo   | Tipo    | Descripción                                          |
+| ------- | ------- | ---------------------------------------------------- |
+| success | boolean | Verdadero si la solicitud fue realizada exitosamente |
+| message | String  | Mensaje descriptivo del estado de respuesta          |
+| data    | Object  | Objeto                                               |
+
+```JSON
+{
+  "success": true,
+  "message": "Objeto creado exitosamente",
+  "data": {
+    "object": {
+      "_id": "1",
+      "number": "341",
+    }
+  }
+}
+```
+
+## POST `/api/lines/add`
 
 ### Descripción
 
-Crea una nueva línea de transporte público y asocia a una lista de puntos geoespaciales (Ubicaciones).  
-Si un punto ya existe (misma `lat` y `long`), se reutiliza.
+Crea una nueva línea de transporte público y asocia a una lista de puntos geoespaciales.  
+Si un punto ya existe (misma `lat` y `lon`), se reutiliza.
 
 ---
 
 ### Solicitud (Request)
 
 - **Método**: `POST`
-- **URL**: `/api/lineas/add`
+- **URL**: `/api/lines/add`
 - **Encabezados**: `Content-Type: application/json`
 - **Body**:
   ```JSON
   {
-    "numero": "341",
-    "sindicato": "21 de Septiembre",
-    "puntos": [
-        { "lat": 13.6929, "long": -89.2182 },
-        { "lat": 13.7000, "long": -89.2100 }
+    "number": "341",
+    "syndicate": "21 de Septiembre",
+    "points": [
+        { "lat": 13.6929, "lon": -89.2182 },
+        { "lat": 13.7000, "lon": -89.2100 }
     ]
   }
   ```
 
-| Campo     | Tipo   | Requerido | Descripción                                      |
-| --------- | ------ | --------- | ------------------------------------------------ |
-| numero    | String | ✅ Sí     | Número de Minibus                                |
-| sindicato | String | ❌ No     | Nombre del sindicato                             |
-| puntos    | Array  | ✅ Sí     | Lista de id de objetos Ubicacion (`lat`, `long`) |
+| Campo     | Tipo   | Requerido | Descripción                                     |
+| --------- | ------ | --------- | ----------------------------------------------- |
+| number    | String | ✅ Sí     | Número de Minibus                               |
+| syndicate | String | ❌ No     | Nombre del sindicato                            |
+| points    | Array  | ✅ Sí     | Lista de id de objetos Ubicacion (`lat`, `lon`) |
 
 ### Respuesta (Response)
 
@@ -49,13 +72,13 @@ El formato de la respuesta es:
   "success": true,
   "message": "Linea creada exitosamente",
   "data": {
-    "linea": {
+    "line": {
       "_id": "66512a8b21b9638ecfd7b431",
-      "numero": "341",
-      "sindicato": "21 de Septiembre",
-      "puntos": [
-        "664f3e11998a3b65ddfacd1a",
-        "664f3e11998a3b65ddfacd1b", ...
+      "number": "341",
+      "syndicate": "21 de Septiembre",
+      "points": [
+        { "lat": 13.6929, "lon": -89.2182 },
+        { "lat": 13.7000, "lon": -89.2100 }
       ],
       "__v": 0
     }
@@ -73,7 +96,7 @@ El formato de la respuesta es:
 }
 ```
 
-## GET `/api/lineas/all`
+## GET `/api/lines/all`
 
 Obtiene todas las líneas de transporte registradas.
 
@@ -81,7 +104,7 @@ Obtiene todas las líneas de transporte registradas.
 
 ### Request
 
-- **URL**: `/api/lineas/all`
+- **URL**: `/api/lines/all`
 - **Método**: `GET`
 - **Headers**: `Content-Type: application/json`
 
@@ -100,12 +123,12 @@ Obtiene todas las líneas de transporte registradas.
     "success": true,
     "message": "Lineas obtenidas",
     "data": {
-      "lineas": [
+      "lines": [
         {
           "_id": "66512a8b21b9638ecfd7b431",
-          "numero": "341",
-          "sindicato": "21 de Septiembre",
-          "puntos": ["664f3e11998a3b65ddfacd1a", "664f3e11998a3b65ddfacd1b"],
+          "number": "341",
+          "syndicate": "21 de Septiembre",
+          "points": [{ "lat": 13.6929, "lon": -89.2182 }, { "lat": 13.7000, "lon": -89.2100 }],
           "__v": 0
         },
         ...
@@ -124,39 +147,37 @@ Obtiene todas las líneas de transporte registradas.
   }
 ```
 
-## GET `/api/lineas/find-close-to-point`
+## GET `/api/lines/near-point`
 
-Obtiene las líneas de transporte cercanas a un punto geoespacial dado.  
-Si el punto no existe en la base de datos, se busca el punto más cercano.
+Obtiene las líneas de transporte cercanas (1km de radio) a un punto geoespacial dado.
 
 ---
 
 ### Request
 
-- **URL**: `/api/lineas/find-close-to-point`
+- **URL**: `/api/lines/near-point`
 - **Método**: `POST`
 - **Headers**: `Content-Type: application/json`
 - **Body**:
   ```json
   {
     "lat": 13.6929,
-    "long": -89.2182
+    "lon": -89.2182
   }
   ```
 
-| Campo     | Tipo   | Req.  | Descripción                   |
-| --------- | ------ | ----- | ----------------------------- |
-| lat, long | Number | ✅ Sí | Latitud del punto geoespacial |
+| Campo    | Tipo   | Req.  | Descripción                   |
+| -------- | ------ | ----- | ----------------------------- |
+| lat, lon | Number | ✅ Sí | Latitud del punto geoespacial |
 
 ### Respuesta (Response)
 
-| Campo        | Tipo    | Descripción                                |
-| ------------ | ------- | ------------------------------------------ |
-| success      | Boolean | Indica si la operación fue exitosa         |
-| message      | String  | Mensaje descriptivo de la operación        |
-| data         | Object  | Información sobre el punto y las líneas    |
-| closestPoint | Object  | El punto más cercano o el punto encontrado |
-| lines        | Array   | Lista de líneas que contienen el punto     |
+| Campo   | Tipo    | Descripción                             |
+| ------- | ------- | --------------------------------------- |
+| success | Boolean | Indica si la operación fue exitosa      |
+| message | String  | Mensaje descriptivo de la operación     |
+| data    | Object  | Información sobre el punto y las líneas |
+| lines   | Array   | Lista de líneas cercanas al punto       |
 
 #### ✅ `200 OK`
 
@@ -165,22 +186,12 @@ Si el punto no existe en la base de datos, se busca el punto más cercano.
     "success": true,
     "message": "Lineas encontradas cercanas al punto",
     "data": {
-      "puntoMasCercano": {
-        "_id": "664f3e11998a3b65ddfacd1a",
-        "lat": 13.6929,
-        "long": -89.2182,
-        "location": {
-          "type": "Point",
-          "coordinates": [-89.2182, 13.6929]
-        },
-        "__v": 0
-      },
-      "lineas": [
+      "lines": [
         {
           "_id": "66512a8b21b9638ecfd7b431",
-          "numero": "341",
-          "sindicato": "21 de Septiembre",
-          "puntos": ["664f3e11998a3b65ddfacd1a", "664f3e11998a3b65ddfacd1b"],
+          "number": "341",
+          "syndicate": "21 de Septiembre",
+          "points": [{ "lat": 13.6929, "lon": -89.2182 }, { "lat": 13.7000, "lon": -89.2100 }],
           "__v": 0
         },
         ...
