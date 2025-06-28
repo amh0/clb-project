@@ -27,8 +27,8 @@ Todas las respuestas que retorna el API tienen el siguiente formato:
 
 ### Descripción
 
-Crea una nueva línea de transporte público y asocia a una lista de puntos geoespaciales.  
-Si un punto ya existe (misma `lat` y `lon`), se reutiliza.
+Crea una nueva línea de transporte público, asocia a una lista de puntos geoespaciales, y una lista de puntos vector.  
+Si un punto geoespacial ya existe (misma `lat` y `lon`), se reutiliza.
 
 ---
 
@@ -45,15 +45,20 @@ Si un punto ya existe (misma `lat` y `lon`), se reutiliza.
     "points": [
         { "lat": 13.6929, "lon": -89.2182 },
         { "lat": 13.7000, "lon": -89.2100 }
+    ],
+    "vectorPoints": [
+        { "lat": 13.6929, "lon": -89.2182 },
+        { "lat": 13.7000, "lon": -89.2100 }
     ]
   }
   ```
 
-| Campo     | Tipo   | Requerido | Descripción                                     |
-| --------- | ------ | --------- | ----------------------------------------------- |
-| number    | String | ✅ Sí     | Número de Minibus                               |
-| syndicate | String | ❌ No     | Nombre del sindicato                            |
-| points    | Array  | ✅ Sí     | Lista de id de objetos Ubicacion (`lat`, `lon`) |
+| Campo        | Tipo   | Requerido | Descripción                                                      |
+| ------------ | ------ | --------- | ---------------------------------------------------------------- |
+| number       | String | ✅ Sí     | Número de Minibus                                                |
+| syndicate    | String | ❌ No     | Nombre del sindicato                                             |
+| points       | Array  | ✅ Sí     | Lista de puntos de la ruta {`lat`, `lon`}                        |
+| vectorPoints | Array  | ✅ Sí     | Lista de puntos para graficar la linea en el mapa (`lat`, `lon`) |
 
 ### Respuesta (Response)
 
@@ -77,12 +82,36 @@ El formato de la respuesta es:
       "number": "341",
       "syndicate": "21 de Septiembre",
       "points": [
-        { "lat": 13.6929, "lon": -89.2182 },
-        { "lat": 13.7000, "lon": -89.2100 }
+        {
+          "type":"Point",
+          "coordinates":[-16.49725,68.12733],
+          "_id":"685fe82322fa41696ad47e8a"
+        },
+        {
+          "type":"Point",
+          "coordinates":[-16.49725,68.12733],
+          "_id":"685fe82322fa41696ad47e8a"
+        },
       ],
       "__v": 0
     }
-  }
+  },
+  "vectorLine": {
+      "_id": "33810d82b21b9638ecfd7b431",
+      "vectorPoints": [
+        {
+          "type":"Point",
+          "coordinates":[-16.49725,68.12733],
+          "_id":"685fe82322fa41696ad47e8a"
+        },
+        {
+          "type":"Point",
+          "coordinates":[-16.49725,68.12733],
+          "_id":"685fe82322fa41696ad47e8a"
+        },
+      ],
+      "__v": 0
+    }
 }
 ```
 
@@ -159,16 +188,21 @@ Obtiene las líneas de transporte cercanas (1km de radio) a un punto geoespacial
 - **Método**: `POST`
 - **Headers**: `Content-Type: application/json`
 - **Body**:
+
   ```json
   {
     "lat": 13.6929,
-    "lon": -89.2182
+    "lon": -89.2182,
+    "includePoints": false,
+    "includeVectorLine": true
   }
   ```
 
-| Campo    | Tipo   | Req.  | Descripción                   |
-| -------- | ------ | ----- | ----------------------------- |
-| lat, lon | Number | ✅ Sí | Latitud del punto geoespacial |
+| Campo               | Tipo    | Req.  | Descripción                                        |
+| ------------------- | ------- | ----- | -------------------------------------------------- |
+| lat, lon            | Number  | ✅ Sí | Latitud del punto geoespacial                      |
+| includePoints       | Boolean | No    | Verdadero si se requiere puntos de la linea        |
+| includeVectorPoints | Boolean | No    | Verdadero si se requiere puntos de la linea vector |
 
 ### Respuesta (Response)
 
@@ -192,6 +226,12 @@ Obtiene las líneas de transporte cercanas (1km de radio) a un punto geoespacial
           "number": "341",
           "syndicate": "21 de Septiembre",
           "points": [{ "lat": 13.6929, "lon": -89.2182 }, { "lat": 13.7000, "lon": -89.2100 }],
+          "vectorLine":{
+            "_id":"685fe82322fa41696ad47e66",
+            "vectorPoints":[
+              {"lat":68.12159328600671,"lon":-16.49097107433775},
+              {"lat":68.12149403772518,"lon":-16.49306470735297},
+            ]},
           "__v": 0
         },
         ...

@@ -1,7 +1,9 @@
 const Line = require("../models/Line");
+const VectorLine = require("../models/VectorLine");
 const pointsController = require("./points");
 
 const { successResponse, errorResponse } = require("../utils/response");
+const { transformGeoJSONPoints } = require("../utils/geoPoints");
 
 async function getAll(req, res) {
   try {
@@ -22,7 +24,7 @@ async function getAll(req, res) {
 
 async function createLine(req, res) {
   try {
-    const { number, syndicate, points } = req.body;
+    const { number, syndicate, points, vectorPoints } = req.body;
 
     if (!number || !Array.isArray(points) || points.length === 0) {
       return errorResponse(res, 400, "Numero de Linea y puntos son requeridos");
@@ -49,11 +51,28 @@ async function createLine(req, res) {
       points: addedPoints,
     });
 
-    return successResponse(res, 201, "Linea creada exitosamente", {
-      line: addedLine,
-    });
+    const response = { line: addedLine };
+
+    // Handle Vector Line creation
+    if (Array.isArray(vectorPoints) && vectorPoints.length > 0) {
+      const createdVectorLine = await VectorLine.create({
+        lineId: addedLine._id,
+        vectorPoints: vectorPoints.map((vectorPoint) => ({
+          type: "Point",
+          coordinates: [vectorPoint.lon, vectorPoint.lat],
+        })),
+      });
+
+      addedLine.vectorLine = createdVectorLine._id;
+      await addedLine.save();
+
+      response.vectorLine = createdVectorLine;
+    }
+
+    return successResponse(res, 201, "Linea creada exitosamente", response);
   } catch (err) {
     console.log("Error en la creación de la Linea.");
+    console.log(err);
     return errorResponse(
       res,
       500,
@@ -65,13 +84,36 @@ async function createLine(req, res) {
 
 async function linesNearPoint(req, res) {
   try {
-    const { lat, lon } = req.body;
+    const {
+      lat,
+      lon,
+      includePoints = false,
+      includeVectorLine = true,
+    } = req.body;
+
     if (typeof lat !== "number" || typeof lon !== "number") {
       return errorResponse(res, 400, "Latitud y longitud deben ser numeros");
     }
 
-    // Find lines that are within specified radius to the point
-    const lines = await Line.find({
+    if (
+      typeof includePoints !== "boolean" &&
+      typeof includeVectorLine !== "boolean"
+    ) {
+      return errorResponse(
+        res,
+        400,
+        "includePoints, includeVectorLine deben ser booleanos"
+      );
+    }
+    // Build object to return only selected fields
+    const projection = {};
+    projection.number = 1;
+    projection.syndicate = 1;
+    projection.vectorLine = 1;
+    if (includePoints) projection.points = 1;
+
+    // Find lines that are inside specified radius to the point
+    let query = Line.find({
       points: {
         $elemMatch: {
           coordinates: {
@@ -81,16 +123,41 @@ async function linesNearPoint(req, res) {
           },
         },
       },
-    });
+    }).select(projection);
+
+    // Conditionally populate vectorLine
+    if (includeVectorLine) {
+      query = query.populate({
+        path: "vectorLine",
+        select: "vectorPoints",
+      });
+    }
+
+    const lines = await query;
 
     // No point found
     if (lines.length === 0) {
       return errorResponse(res, 400, "No se hallaron lineas cercanas al punto");
     }
 
-    // Point found search Lines
+    // postprocess: geoJSON points to lat, lon
+
+    const processedLines = lines.map((line) => {
+      const obj = line.toObject();
+
+      if (obj.vectorLine && Array.isArray(obj.vectorLine.vectorPoints)) {
+        obj.vectorLine.vectorPoints = transformGeoJSONPoints(
+          obj.vectorLine.vectorPoints
+        );
+        console.log(obj);
+        console.log(obj.vectorLine);
+      }
+
+      return obj;
+    });
+
     return successResponse(res, 200, "Lineas encontradas cercanas al punto", {
-      lines,
+      lines: processedLines,
     });
   } catch (err) {
     console.error("Error in findCloseLInesToPoint", err);
