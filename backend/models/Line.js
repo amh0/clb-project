@@ -24,6 +24,8 @@ const LineSchema = new mongoose.Schema({
       coordinates: { type: ["Number"], required: true },
     },
   ],
+  
+  vectorLine: { type: mongoose.Schema.Types.ObjectId, ref: "VectorLine" },
 });
 
 LineSchema.index({ "points.coordinates": "2dsphere" });
