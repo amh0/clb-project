@@ -1,4 +1,5 @@
 const Line = require("../models/Line");
+const VectorLine = require("../models/VectorLine");
 const pointsController = require("./points");
 
 const { successResponse, errorResponse } = require("../utils/response");
@@ -22,7 +23,7 @@ async function getAll(req, res) {
 
 async function createLine(req, res) {
   try {
-    const { number, syndicate, points } = req.body;
+    const { number, syndicate, points, vectorPoints } = req.body;
 
     if (!number || !Array.isArray(points) || points.length === 0) {
       return errorResponse(res, 400, "Numero de Linea y puntos son requeridos");
@@ -49,11 +50,28 @@ async function createLine(req, res) {
       points: addedPoints,
     });
 
-    return successResponse(res, 201, "Linea creada exitosamente", {
-      line: addedLine,
-    });
+    const response = { line: addedLine };
+
+    // Handle Vector Line creation
+    if (Array.isArray(vectorPoints) && vectorPoints.length > 0) {
+      const createdVectorLine = await VectorLine.create({
+        lineId: addedLine._id,
+        vectorPoints: vectorPoints.map((vectorPoint) => ({
+          type: "Point",
+          coordinates: [vectorPoint.lon, vectorPoint.lat],
+        })),
+      });
+
+      addedLine.vectorLine = createdVectorLine._id;
+      await addedLine.save();
+
+      response.vectorLine = createdVectorLine;
+    }
+
+    return successResponse(res, 201, "Linea creada exitosamente", response);
   } catch (err) {
     console.log("Error en la creación de la Linea.");
+    console.log(err);
     return errorResponse(
       res,
       500,
