@@ -25,7 +25,7 @@ async function getAll(req, res) {
 
 async function getLineByNumber(req, res) {
   try {
-    const { number } = req.body;
+    const { number } = req.params;
 
     if (!number) {
       return errorResponse(res, 400, "El número de linea es requerido");
@@ -57,7 +57,7 @@ async function getLineByNumber(req, res) {
 
 async function deleteLineByNumber(req, res) {
   try {
-    const { number } = req.body;
+    const { number } = req.params;
 
     const line = await Line.findOne({ number });
 
@@ -155,14 +155,20 @@ function formatGeoJSONPoints(lines) {
 
   return processedLines;
 }
+
 async function linesNearPoint(req, res) {
   try {
-    const {
+    let {
       lat,
       lon,
-      includePoints = false,
-      includeVectorLine = true,
-    } = req.body;
+      includePoints = "false",
+      includeVectorLine = "true",
+    } = req.query;
+
+    lat = parseFloat(lat);
+    lon = parseFloat(lon);
+    includePoints = includePoints === "true";
+    includeVectorLine = includeVectorLine === "true";
 
     if (typeof lat !== "number" || typeof lon !== "number") {
       return errorResponse(res, 400, "Latitud y longitud deben ser numeros");

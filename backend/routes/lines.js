@@ -11,7 +11,7 @@ const router = require("express").Router();
 router.post("/add", createLine);
 router.get("/all", getAll);
 router.get("/near-point", linesNearPoint);
-router.get("/get-by-number", getLineByNumber);
-router.delete("/delete-by-number", deleteLineByNumber);
+router.get("/get/:number", getLineByNumber);
+router.delete("/delete/:number", deleteLineByNumber);
 
 module.exports = router;
