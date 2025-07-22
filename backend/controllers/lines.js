@@ -18,8 +18,63 @@ async function getAll(req, res) {
       processedLines,
     });
   } catch (err) {
-    console.log("Error al obtener Lineas.");
+    console.log("Error al obtener Lineas.", err);
     return errorResponse(res, 500, "Error al obtener Lineas.", err.message);
+  }
+}
+
+async function getLineByNumber(req, res) {
+  try {
+    const { number } = req.body;
+
+    if (!number) {
+      return errorResponse(res, 400, "El número de linea es requerido");
+    }
+
+    const line = await Line.findOne({ number }).populate({
+      path: "vectorLine",
+      select: "vectorPoints",
+    });
+
+    if (!line) {
+      return errorResponse(
+        res,
+        404,
+        `No se encontró una línea con número ${number}`
+      );
+    }
+
+    const processedLine = formatGeoJSONPoints([line])[0];
+
+    return successResponse(res, 200, "Línea obtenida correctamente", {
+      line: processedLine,
+    });
+  } catch (err) {
+    console.error("Error al obtener línea por número:", err);
+    return errorResponse(res, 500, "Error interno del servidor", err.message);
+  }
+}
+
+async function deleteLineByNumber(req, res) {
+  try {
+    const { number } = req.body;
+
+    const line = await Line.findOne({ number });
+
+    if (!line) {
+      return errorResponse(res, 404, `No se encontró una línea ${number}`);
+    }
+
+    if (line.vectorLine) {
+      await VectorLine.findByIdAndDelete(line.vectorLine);
+    }
+
+    await Line.deleteOne({ _id: line._id });
+
+    return successResponse(res, 200, `Línea ${number} eliminada exitosamente`);
+  } catch (err) {
+    console.error("Error al eliminar línea por número:", err);
+    return errorResponse(res, 500, "Error interno del servidor", err.message);
   }
 }
 
@@ -174,4 +229,10 @@ async function linesNearPoint(req, res) {
   }
 }
 
-module.exports = { createLine, linesNearPoint, getAll };
+module.exports = {
+  createLine,
+  linesNearPoint,
+  getAll,
+  getLineByNumber,
+  deleteLineByNumber,
+};
