@@ -7,18 +7,19 @@ const { transformGeoJSONPoints } = require("../utils/geoPoints");
 
 async function getAll(req, res) {
   try {
-    const lines = await Line.find();
+    const lines = await Line.find().populate({
+      path: "vectorLine",
+      select: "vectorPoints",
+    });
+
+    const processedLines = formatGeoJSONPoints(lines);
+
     return successResponse(res, 200, "Lineas obtenidas", {
-      lines,
+      processedLines,
     });
   } catch (err) {
-    console.log("Error en la creación de la Linea.");
-    return errorResponse(
-      res,
-      500,
-      "Error en la creación de la Linea",
-      err.message
-    );
+    console.log("Error al obtener Lineas.");
+    return errorResponse(res, 500, "Error al obtener Lineas.", err.message);
   }
 }
 
@@ -82,6 +83,23 @@ async function createLine(req, res) {
   }
 }
 
+function formatGeoJSONPoints(lines) {
+  const processedLines = lines.map((line) => {
+    const obj = line.toObject();
+
+    if (obj.vectorLine && Array.isArray(obj.vectorLine.vectorPoints)) {
+      obj.vectorPoints = transformGeoJSONPoints(obj.vectorLine.vectorPoints);
+      delete obj.vectorLine;
+    }
+
+    if (obj.points && Array.isArray(obj.points)) {
+      obj.points = transformGeoJSONPoints(obj.points);
+    }
+    return obj;
+  });
+
+  return processedLines;
+}
 async function linesNearPoint(req, res) {
   try {
     const {
@@ -113,12 +131,16 @@ async function linesNearPoint(req, res) {
     if (includePoints) projection.points = 1;
 
     // Find lines that are inside specified radius to the point
+    const radiusKm = 0.5; // km
+    const EARTH_RADIUS = 6378; // km
+    const searchRadius = radiusKm / EARTH_RADIUS;
+
     let query = Line.find({
       points: {
         $elemMatch: {
           coordinates: {
             $geoWithin: {
-              $centerSphere: [[lon, lat], 0.01], // 1km radius
+              $centerSphere: [[lon, lat], searchRadius], // 0.5km radius
             },
           },
         },
@@ -141,20 +163,7 @@ async function linesNearPoint(req, res) {
     }
 
     // postprocess: geoJSON points to lat, lon
-
-    const processedLines = lines.map((line) => {
-      const obj = line.toObject();
-
-      if (obj.vectorLine && Array.isArray(obj.vectorLine.vectorPoints)) {
-        obj.vectorLine.vectorPoints = transformGeoJSONPoints(
-          obj.vectorLine.vectorPoints
-        );
-        console.log(obj);
-        console.log(obj.vectorLine);
-      }
-
-      return obj;
-    });
+    const processedLines = formatGeoJSONPoints(lines);
 
     return successResponse(res, 200, "Lineas encontradas cercanas al punto", {
       lines: processedLines,
