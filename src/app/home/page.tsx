@@ -12,10 +12,19 @@ import {
   Marker,
   Popup,
 } from "react-leaflet";
-import { useState, useRef } from "react";
+import { Polyline } from "react-leaflet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useState, useRef, useEffect } from "react";
 import { LocateFixed } from "lucide-react";
 import { fetchLineasCercanas } from "@/lib/endpoints";
-import { Polyline } from "react-leaflet";
 
 // Parche iconos Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -43,7 +52,7 @@ function MarcadorCentral({ onGuardar }) {
     <div className="absolute top-36 left-1/2 -translate-x-1/2 z-[1000]">
       <button
         onClick={guardarUbicacion}
-        className="bg-blue-600 text-white px-4 py-2 rounded shadow pointer-coarse:"
+        className="bg-white text-black px-4 py-2 rounded shadow"
       >
         Guardar ubicación
       </button>
@@ -61,16 +70,16 @@ export default function HomePage() {
   const cerrarDialogOrigenRef = useRef(null);
 
   const [lineasCercanas, setLineasCercanas] = useState([]);
+  const [selectedLineaIndex, setSelectedLineaIndex] = useState(0);
 
-  const coloresLinea = [
-    "red",
-    "blue",
-    "green",
-    "orange",
-    "purple",
-    "teal",
-    "brown",
-  ];
+  const [open, setOpen] = useState(false);
+
+  // Al recibir nuevas líneas, selecciona la primera por defecto
+  useEffect(() => {
+    if (lineasCercanas.length > 0) {
+      setSelectedLineaIndex(0);
+    }
+  }, [lineasCercanas]);
 
   const handleElegirDestino = () => {
     setElegirEnMapaDestino(true);
@@ -110,6 +119,8 @@ export default function HomePage() {
       lat: coordenadasDestino.lat,
       lon: coordenadasDestino.lng,
     });
+
+    setOpen(true);
 
     try {
       const response = await fetchLineasCercanas(
@@ -175,19 +186,61 @@ export default function HomePage() {
           </Marker>
         )}
 
-        {lineasCercanas.map((linea, index) => (
+        {lineasCercanas[selectedLineaIndex] && (
           <Polyline
-            key={linea._id || index}
-            positions={linea.points.map((p) => [p.lon, p.lat])}
-            pathOptions={{
-              color: coloresLinea[index % coloresLinea.length],
-              weight: 4,
-            }}
+            positions={
+              lineasCercanas[selectedLineaIndex].points.map((p) => [p.lon, p.lat])
+            }
+            pathOptions={{ color: "blue", weight: 8 }}
           />
-        ))}
+        )}
 
         <ZoomControl position="bottomright" />
       </MapContainer>
+
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="bottom" className="h-[400px] flex flex-col z-[100] bg-variant1 from-[#1e293b] to-[#0f172a] text-white rounded-t-2xl">
+          <SheetHeader>
+            <SheetTitle className="text-white text-xl">Líneas Encontradas</SheetTitle>
+            <SheetDescription className="text-white">
+              Total líneas encontradas: {lineasCercanas.length}
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-y-auto py-4 space-y-4">
+            {lineasCercanas.length === 0 ? (
+              <div className="text-center text-white">
+                No se encontraron líneas
+              </div>
+            ) : (
+              lineasCercanas.map((linea, index) => (
+                <Button
+                  key={linea._id || index}
+                  className={`w-full flex items-center gap-3 px-4 py-3 font-medium transition-colors duration-300
+        ${index === selectedLineaIndex ? "bg-white/15 text-white" : "text-white/80 hover:bg-white/10 hover:text-white bg-midnight" }
+      `}
+                  onClick={() => setSelectedLineaIndex(index)}
+                >
+                  <h1 className="font-bold">Línea #{index + 1}</h1>
+                  <p>Nombre: {linea.number}</p>
+                </Button>
+              ))
+            )}
+          </div>
+
+          <div className="border-t border-variant1 pt-4">
+            <Button onClick={() => setOpen(false)} className="w-full text-center  bg-white text-variant1  hover:bg-white/80 transition">
+              Cerrar panel
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {lineasCercanas && (
+        <Button className="absolute bottom-2 left-2 z-30 bg-ocean text-white rounded-2xl ring-2 ring-midnight" variant={"ghost"} onClick={() => setOpen(!open)}>
+          mostrar lineas
+        </Button>
+      )}
 
       {(elegirEnMapaDestino || elegirEnMapaOrigen) && (
         <div className="absolute top-1/2 left-1/2 z-[500] -translate-x-1/2 -translate-y-1/2 pointer-events-none">

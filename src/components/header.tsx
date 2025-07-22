@@ -21,6 +21,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { ModeToggle } from "./mode-toggle";
+import Nadvar from "./nadvar";
 
 export default function HeaderPage({
   setElegirEnMapaDestino,
@@ -37,55 +38,32 @@ export default function HeaderPage({
   };
 
   return (
-    <div className="flex border-4">
-      <div className="ml-2 mt-2 border-amber-100 border-2">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" className="bg-midnight text-white">
-              <Menu />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left">
-            <SheetHeader>
-              <SheetTitle>Edit profile</SheetTitle>
-              <SheetDescription>
-                Make changes to your profile here. Click save when you&apos;re done.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="grid flex-1 auto-rows-min gap-6 px-4">
-              <ModeToggle />
-            </div>
-            <SheetFooter>
-              <Button type="submit">Save changes</Button>
-              <SheetClose asChild>
-                <Button variant="outline">Close</Button>
-              </SheetClose>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+    <div className="flex border-4 border-transparent">
+      <div className="ml-2 mt-2 border-transparent border-2">
+        <Nadvar/>
       </div>
 
       <div className="flex flex-col w-full">
         {/* Dialog de ORIGEN */}
-        <div className="border-2 border-red-100">
+        <div className="border-2 border-transparent">
           <Dialog>
-            <div className="flex justify-center items-center md:justify-start border-2">
+            <div className="flex justify-center items-center md:justify-start border-2 border-transparent">
               <DialogTrigger asChild>
                 <Input
                   type="text"
                   placeholder="Selecciona Origen"
-                  className="mx-4 mt-2 w-full md:w-sm bg-[#508ca4] text-[#bfd7ea] placeholder:text-white"
+                  className="mx-4 mt-2 w-full md:w-sm bg-white text-variant1 placeholder:text-variant1 border-variant1"
                 />
               </DialogTrigger>
               <Button
                 variant="outline"
-                className="mt-2 mr-2 bg-midnight"
+                className="mt-2 mr-2 bg-variant1"
                 onClick={onBuscarLineas}
               >
                 <Search className="text-white " />
               </Button>
             </div>
-            <DialogContent className="sm:max-w-md text-white bg-midnight rounded-2xl p-6 z-[100] border-none">
+            <DialogContent className="sm:max-w-md text-white bg-variant1 rounded-2xl p-6 z-[100] border-none">
               <DialogHeader>
                 <DialogTitle className="text-start">Punto de Origen</DialogTitle>
               </DialogHeader>
@@ -131,18 +109,18 @@ export default function HeaderPage({
                 <Input
                   type="text"
                   placeholder="Selecciona Destino"
-                  className="mx-4 mt-2 w-full md:w-sm bg-[#508ca4] text-[#bfd7ea] placeholder:text-white"
+                  className="mx-4 mt-2 w-full md:w-sm bg-white text-back placeholder:text-variant1 border-variant1"
                 />
               </DialogTrigger>
               <Button
                 variant="outline"
-                className="mt-2 mr-2 bg-brick"
+                className="mt-2 mr-2 bg-variant6"
                 onClick={handleEpmty}
               >
                 <X className="text-white" />
               </Button>
             </div>
-            <DialogContent className="sm:max-w-md text-white bg-midnight rounded-2xl p-6 z-[100] border-none">
+            <DialogContent className="sm:max-w-md text-white bg-variant1 rounded-2xl p-6 z-[100] border-none">
               <DialogHeader>
                 <DialogTitle className="text-start">Punto de Destino</DialogTitle>
               </DialogHeader>
@@ -170,7 +148,7 @@ export default function HeaderPage({
                   <Button
                     type="button"
                     variant="secondary"
-                    className="bg-brick"
+                    className="bg-white"
                     ref={cerrarDialogRef}
                   >
                     Close

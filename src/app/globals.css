@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-midnight: #172a3a;
+  /* --color-midnight: #172a3a;
   --color-ocean: #508ca4;
   --color-ice: #bfd7ea;
   --color-sky: #91aec1;
@@ -14,7 +14,26 @@
   --color-steel: #2e5a73;
   --color-sand: #f3b562;
   --color-terra: #d95d39;
+  --color-carbon: #1c1c1c; */
+  --color-midnight: #172a3a;
+  --color-ocean: #548AA7;
+  --color-ice: #bfd7ea;
+  --color-sky: #91aec1;
+  --color-brick: #621708;
+
+  --color-cloud: #e9eff4;
+  --color-steel: #2e5a73;
+  --color-sand: #f3b562;
+  --color-terra: #d95d39;
   --color-carbon: #1c1c1c;
+
+  --color-variant1: #2A5F7C;
+  --color-variant2: #548AA7;
+  --color-variant3: #8CB9D1;
+  --color-variant4: #D3EDFC;
+  --color-variant5: #CBEDFF;
+  --color-variant6: #C91A00; /* reemplaza a brick/*/
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
