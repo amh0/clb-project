@@ -7,18 +7,74 @@ const { transformGeoJSONPoints } = require("../utils/geoPoints");
 
 async function getAll(req, res) {
   try {
-    const lines = await Line.find();
+    const lines = await Line.find().populate({
+      path: "vectorLine",
+      select: "vectorPoints",
+    });
+
+    const processedLines = formatGeoJSONPoints(lines);
+
     return successResponse(res, 200, "Lineas obtenidas", {
-      lines,
+      processedLines,
     });
   } catch (err) {
-    console.log("Error en la creación de la Linea.");
-    return errorResponse(
-      res,
-      500,
-      "Error en la creación de la Linea",
-      err.message
-    );
+    console.log("Error al obtener Lineas.", err);
+    return errorResponse(res, 500, "Error al obtener Lineas.", err.message);
+  }
+}
+
+async function getLineByNumber(req, res) {
+  try {
+    const { number } = req.params;
+
+    if (!number) {
+      return errorResponse(res, 400, "El número de linea es requerido");
+    }
+
+    const line = await Line.findOne({ number }).populate({
+      path: "vectorLine",
+      select: "vectorPoints",
+    });
+
+    if (!line) {
+      return errorResponse(
+        res,
+        404,
+        `No se encontró una línea con número ${number}`
+      );
+    }
+
+    const processedLine = formatGeoJSONPoints([line])[0];
+
+    return successResponse(res, 200, "Línea obtenida correctamente", {
+      line: processedLine,
+    });
+  } catch (err) {
+    console.error("Error al obtener línea por número:", err);
+    return errorResponse(res, 500, "Error interno del servidor", err.message);
+  }
+}
+
+async function deleteLineByNumber(req, res) {
+  try {
+    const { number } = req.params;
+
+    const line = await Line.findOne({ number });
+
+    if (!line) {
+      return errorResponse(res, 404, `No se encontró una línea ${number}`);
+    }
+
+    if (line.vectorLine) {
+      await VectorLine.findByIdAndDelete(line.vectorLine);
+    }
+
+    await Line.deleteOne({ _id: line._id });
+
+    return successResponse(res, 200, `Línea ${number} eliminada exitosamente`);
+  } catch (err) {
+    console.error("Error al eliminar línea por número:", err);
+    return errorResponse(res, 500, "Error interno del servidor", err.message);
   }
 }
 
@@ -82,14 +138,37 @@ async function createLine(req, res) {
   }
 }
 
+function formatGeoJSONPoints(lines) {
+  const processedLines = lines.map((line) => {
+    const obj = line.toObject();
+
+    if (obj.vectorLine && Array.isArray(obj.vectorLine.vectorPoints)) {
+      obj.vectorPoints = transformGeoJSONPoints(obj.vectorLine.vectorPoints);
+      delete obj.vectorLine;
+    }
+
+    if (obj.points && Array.isArray(obj.points)) {
+      obj.points = transformGeoJSONPoints(obj.points);
+    }
+    return obj;
+  });
+
+  return processedLines;
+}
+
 async function linesNearPoint(req, res) {
   try {
-    const {
+    let {
       lat,
       lon,
-      includePoints = false,
-      includeVectorLine = true,
-    } = req.body;
+      includePoints = "false",
+      includeVectorLine = "true",
+    } = req.query;
+
+    lat = parseFloat(lat);
+    lon = parseFloat(lon);
+    includePoints = includePoints === "true";
+    includeVectorLine = includeVectorLine === "true";
 
     if (typeof lat !== "number" || typeof lon !== "number") {
       return errorResponse(res, 400, "Latitud y longitud deben ser numeros");
@@ -113,12 +192,16 @@ async function linesNearPoint(req, res) {
     if (includePoints) projection.points = 1;
 
     // Find lines that are inside specified radius to the point
+    const radiusKm = 0.5; // km
+    const EARTH_RADIUS = 6378; // km
+    const searchRadius = radiusKm / EARTH_RADIUS;
+
     let query = Line.find({
       points: {
         $elemMatch: {
           coordinates: {
             $geoWithin: {
-              $centerSphere: [[lon, lat], 0.01], // 1km radius
+              $centerSphere: [[lon, lat], searchRadius], // 0.5km radius
             },
           },
         },
@@ -141,20 +224,7 @@ async function linesNearPoint(req, res) {
     }
 
     // postprocess: geoJSON points to lat, lon
-
-    const processedLines = lines.map((line) => {
-      const obj = line.toObject();
-
-      if (obj.vectorLine && Array.isArray(obj.vectorLine.vectorPoints)) {
-        obj.vectorLine.vectorPoints = transformGeoJSONPoints(
-          obj.vectorLine.vectorPoints
-        );
-        console.log(obj);
-        console.log(obj.vectorLine);
-      }
-
-      return obj;
-    });
+    const processedLines = formatGeoJSONPoints(lines);
 
     return successResponse(res, 200, "Lineas encontradas cercanas al punto", {
       lines: processedLines,
@@ -165,4 +235,10 @@ async function linesNearPoint(req, res) {
   }
 }
 
-module.exports = { createLine, linesNearPoint, getAll };
+module.exports = {
+  createLine,
+  linesNearPoint,
+  getAll,
+  getLineByNumber,
+  deleteLineByNumber,
+};
