@@ -42,14 +42,14 @@ function LinesPage() {
   }, [lineas, setLineas]);
 
   return (
-    <div className="bg-midnight h-screen">
+    <div className="bg-variant1 h-screen">
       <header className="flex pt-2 mx-2 gap-2">
         <div><Nadvar /></div>
         <div className="flex-1 md:max-w-2xl">
           <Input
             type="text"
             placeholder="Search"
-            className="bg-ocean text-white placeholder:text-white"
+            className="bg-white text-variant1 placeholder:text-variant1"
           />
         </div>
       </header>
@@ -60,10 +60,10 @@ function LinesPage() {
 
         {!loading && !error && lineas?.map((linea) => (
           <Link href={`/lines/${linea._id}`} key={linea._id}>
-            <Card key={linea._id}>
+            <Card key={linea._id} className="text-white/80 hover:bg-midnight/60 hover:text-white bg-midnight group">
               <CardHeader>
                 <CardTitle>Línea {linea.number}</CardTitle>
-                <CardDescription>{linea.syndicate}</CardDescription>
+                <CardDescription className="group-hover:text-white">{linea.syndicate}</CardDescription>
                 <CardAction>
                   <ChevronRight />
                 </CardAction>

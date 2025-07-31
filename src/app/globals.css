@@ -4,17 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* --color-midnight: #172a3a;
-  --color-ocean: #508ca4;
-  --color-ice: #bfd7ea;
-  --color-sky: #91aec1;
-  --color-brick: #621708;
-
-  --color-cloud: #e9eff4;
-  --color-steel: #2e5a73;
-  --color-sand: #f3b562;
-  --color-terra: #d95d39;
-  --color-carbon: #1c1c1c; */
+  --color-bg1: #2196f3;
+  --color-bg2: #03c955;
   --color-midnight: #172a3a;
   --color-ocean: #548AA7;
   --color-ice: #bfd7ea;

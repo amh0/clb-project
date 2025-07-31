@@ -57,7 +57,7 @@ export default function HeaderPage({
               </DialogTrigger>
               <Button
                 variant="outline"
-                className="mt-2 mr-2 bg-variant1"
+                className="mt-2 mr-2 bg-variant1 hover:bg-variant2 cursor-pointer"
                 onClick={onBuscarLineas}
               >
                 <Search className="text-white " />
@@ -114,7 +114,7 @@ export default function HeaderPage({
               </DialogTrigger>
               <Button
                 variant="outline"
-                className="mt-2 mr-2 bg-variant6"
+                className="mt-2 mr-2 bg-variant6 hover:bg-variant6/80 cursor-pointer"
                 onClick={handleEpmty}
               >
                 <X className="text-white" />

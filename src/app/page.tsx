@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Activity, ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -53,9 +54,11 @@ export default function Home() {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full dark:text-amber-100">
-            Login
-          </Button>
+          <Link href={"/home"}>
+            <Button type="submit" className="w-full dark:text-amber-100">
+              Login
+            </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>

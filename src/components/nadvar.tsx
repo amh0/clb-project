@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Route, Map } from "lucide-react";
+import { Menu, Route, Map, SquarePen, Heart, UserPlus, Bolt  } from "lucide-react";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./mode-toggle";
 import {
@@ -58,23 +58,29 @@ function Nadvar() {
 
         <SheetContent
           side="left"
-          className="bg-variant1 from-[#1e293b] to-[#0f172a] text-white border-none"
+          className="bg-white text-black border-none"
         >
-          <SheetHeader>
+          <SheetHeader className="realative bg-bg1">
+            <div className="h-10 w-10 rounded-full bg-amber-600 mx-auto">
+
+            </div>
             <SheetTitle className="text-2xl font-semibold tracking-tight text-white">
               CienciaLink-App
             </SheetTitle>
-            <SheetDescription className="text-sm text-slate-300">
-              La Paz - Bolivia
-            </SheetDescription>
+              <Button>
+                Editar
+              </Button>
           </SheetHeader>
 
-          <ModeToggle/>
 
           <div className="mt-6 space-y-6 w-full">
             <nav className="flex flex-col gap-2 w-full">
               <NavLink href="/home" label="Planificador de rutas" icon={Route} />
               <NavLink href="/lines" label="Mostrar ruta" icon={Map} />
+              <NavLink href="/lines" label="Tarifa de Transporte" icon={UserPlus} />
+              <NavLink href="/lines" label="Redes Sociales" icon={Heart} />
+              <NavLink href="/drawMap" label="Editor" icon={SquarePen} />
+              <NavLink href="/lines" label="Configuracion" icon={Bolt} />
             </nav>
           </div>
         </SheetContent>
