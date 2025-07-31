@@ -11,8 +11,8 @@ import {
   useMap,
   Marker,
   Popup,
+  Polyline,
 } from "react-leaflet";
-import { Polyline } from "react-leaflet";
 import {
   Sheet,
   SheetContent,
@@ -23,9 +23,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
-import { LocateFixed } from "lucide-react";
+import { X, Bus, ChevronRight, LocateFixed, ChevronDown } from "lucide-react";
 import { fetchLineasCercanas } from "@/lib/endpoints";
 import Nadvar from "@/components/nadvar";
+import FooterPage from "@/components/footer";
 
 // Parche iconos Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,11 +37,10 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-const position = [-16.5, -68.15];
+const DEFAULT_POSITION: [number, number] = [-16.5, -68.15];
 
-function MarcadorCentral({ onGuardar }) {
+function MarcadorCentral({ onGuardar }: { onGuardar: (c: L.LatLng) => void }) {
   const map = useMap();
-
   const guardarUbicacion = () => {
     const center = map.getCenter();
     onGuardar(center);
@@ -48,26 +48,33 @@ function MarcadorCentral({ onGuardar }) {
       `Guardado: Lat ${center.lat.toFixed(6)}, Lng ${center.lng.toFixed(6)}`
     );
   };
-
   return (
-    <div className="absolute top-36 left-1/2 -translate-x-1/2 z-[1000]">
+    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-[1000] flex w-full  justify-center">
       <button
         onClick={guardarUbicacion}
-        className="bg-white text-black px-4 py-2 rounded shadow"
+        className="mx-4 my-2 w-full md:w-sm rounded-2xl border border-bg2 bg-bg2 p-2 text-xl font-bold text-white flex"
       >
-        Guardar ubicación
+        <span className="flex-1">Guardar Ubicación</span>
+        <ChevronRight className="h-8 w-8 text-white" />
       </button>
     </div>
   );
 }
 
-// Componente responsive que monta un solo SheetContent según ancho
-function ResponsiveSheet({ open, onOpenChange, children }) {
+function ResponsiveSheet({
+  open,
+  onOpenChange,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  children: React.ReactNode;
+}) {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 640px)");
-    const handler = (e) => setIsDesktop(e.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mq.addEventListener("change", handler);
     setIsDesktop(mq.matches);
     return () => mq.removeEventListener("change", handler);
@@ -79,8 +86,8 @@ function ResponsiveSheet({ open, onOpenChange, children }) {
         side={isDesktop ? "right" : "bottom"}
         className={
           isDesktop
-            ? "hidden sm:flex h-full flex-col z-[10000] bg-variant1 from-[#1e293b] to-[#0f172a] text-white rounded-t-2xl"
-            : "sm:hidden h-[400px] flex flex-col z-[10000] bg-variant1 from-[#1e293b] to-[#0f172a] text-white rounded-t-2xl"
+            ? "hidden sm:flex h-full w-[350px] flex-col z-50 bg-white text-gray-800 rounded-l-2xl shadow-lg"
+            : "sm:hidden h-[450px] flex w-full flex-col z-50 bg-white text-gray-800 rounded-t-2xl shadow-lg"
         }
       >
         {children}
@@ -91,17 +98,22 @@ function ResponsiveSheet({ open, onOpenChange, children }) {
 
 export default function HomePage() {
   const [elegirEnMapaDestino, setElegirEnMapaDestino] = useState(false);
-  const [coordenadasDestino, setCoordenadasDestino] = useState(null);
-  const cerrarDialogRef = useRef(null);
+  const [coordenadasDestino, setCoordenadasDestino] = useState<L.LatLng | null>(
+    null
+  );
+  const cerrarDialogRef = useRef<HTMLButtonElement>(null);
 
   const [elegirEnMapaOrigen, setElegirEnMapaOrigen] = useState(false);
-  const [coordenadasOrigen, setCoordenadasOrigen] = useState(null);
-  const cerrarDialogOrigenRef = useRef(null);
+  const [coordenadasOrigen, setCoordenadasOrigen] = useState<L.LatLng | null>(
+    null
+  );
+  const cerrarDialogOrigenRef = useRef<HTMLButtonElement>(null);
 
-  const [lineasCercanas, setLineasCercanas] = useState([]);
+  const [lineasCercanas, setLineasCercanas] = useState<any[]>([]);
   const [selectedLineaIndex, setSelectedLineaIndex] = useState(0);
 
   const [open, setOpen] = useState(false);
+  const [headerSeccion, setHeaderSeccion] = useState(1);
 
   useEffect(() => {
     if (lineasCercanas.length > 0) {
@@ -111,29 +123,38 @@ export default function HomePage() {
 
   const handleElegirDestino = () => {
     setElegirEnMapaDestino(true);
-    if (cerrarDialogRef.current) cerrarDialogRef.current.click();
+    setHeaderSeccion(2);
+    cerrarDialogRef.current?.click();
   };
 
   const handleElegirOrigen = () => {
     setElegirEnMapaOrigen(true);
-    if (cerrarDialogOrigenRef.current) cerrarDialogOrigenRef.current.click();
+    cerrarDialogOrigenRef.current?.click();
   };
 
-  const handleGuardarDestino = (coords) => {
+  const handleGuardarDestino = (coords: L.LatLng) => {
     setCoordenadasDestino(coords);
     setElegirEnMapaDestino(false);
+    setHeaderSeccion(1);
   };
 
-  const handleGuardarOrigen = (coords) => {
+  const handleGuardarOrigen = (coords: L.LatLng) => {
     setCoordenadasOrigen(coords);
     setElegirEnMapaOrigen(false);
   };
+
+  const handleCloseGuardar = () => {
+    setElegirEnMapaDestino(false);
+    setElegirEnMapaOrigen(false);
+    setHeaderSeccion(1);
+  }
 
   const handleClearUbicaciones = () => {
     setElegirEnMapaDestino(false);
     setElegirEnMapaOrigen(false);
     setCoordenadasDestino(null);
     setCoordenadasOrigen(null);
+    setHeaderSeccion(1);
     setLineasCercanas([]);
   };
 
@@ -142,9 +163,8 @@ export default function HomePage() {
       alert("Primero seleccione el punto de destino en el mapa");
       return;
     }
-
     setOpen(true);
-
+    setHeaderSeccion(3);
     try {
       const response = await fetchLineasCercanas(
         coordenadasDestino.lng,
@@ -158,16 +178,9 @@ export default function HomePage() {
 
   return (
     <div className="relative h-screen w-screen">
-      <div className="absolute top-0 left-0 w-full z-20 flex">
-        <div className="ml-2 mt-2">
-          <Nadvar />
-        </div>
-        <div className="m-2 flex-1 border-2 text-center text-2xl font-bold">
-          ¿A donde quieres ir?
-        </div>
-      </div>
+      <HeaderPage headerSeccion={headerSeccion} onClearUbicaciones={handleClearUbicaciones} onCloseGuardar={handleCloseGuardar} />
       <div className="absolute bottom-0 left-0 w-full z-20">
-        <HeaderPage
+        {headerSeccion === 1 && <FooterPage
           setElegirEnMapaDestino={setElegirEnMapaDestino}
           onElegirDestinoDesdeMapa={handleElegirDestino}
           cerrarDialogRef={cerrarDialogRef}
@@ -176,13 +189,13 @@ export default function HomePage() {
           cerrarDialogOrigenRef={cerrarDialogOrigenRef}
           onClearUbicaciones={handleClearUbicaciones}
           onBuscarLineas={handleBuscarLineas}
-        />
+        /> }
       </div>
 
       <MapContainer
-        center={position}
+        center={DEFAULT_POSITION}
         zoom={13}
-        scrollWheelZoom={true}
+        scrollWheelZoom
         zoomControl={false}
         className={`h-full w-full z-0 ${open ? "pointer-events-none" : ""}`}
       >
@@ -212,58 +225,110 @@ export default function HomePage() {
             <Popup>Origen seleccionado</Popup>
           </Marker>
         )}
-
         {lineasCercanas[selectedLineaIndex] && (
           <Polyline
-            positions={lineasCercanas[selectedLineaIndex].points.map((p) => [
-              p.lon,
-              p.lat,
-            ])}
+            positions={lineasCercanas[selectedLineaIndex].points.map(
+              (p: any) => [p.lon, p.lat]
+            )}
             pathOptions={{ weight: 8 }}
           />
         )}
-
         <ZoomControl position="bottomright" />
       </MapContainer>
 
       <ResponsiveSheet open={open} onOpenChange={setOpen}>
-        <SheetHeader>
-          <SheetTitle className="text-white text-xl">
-            Líneas Encontradas
-          </SheetTitle>
-          <SheetDescription className="text-white">
-            Total líneas encontradas: {lineasCercanas.length}
-          </SheetDescription>
+        {/* Header con cierre */}
+        <SheetHeader className="p-0">
+          {/* Wrapper blanco con bordes redondeados y sombra */}
+          <div className="relative m-4 rounded-2xl bg-white shadow-lg p-4">
+
+            {/* Grid: columna de timeline + columna de texto */}
+            <div className="grid grid-cols-[auto_1fr] gap-4 items-stretch">
+              {/* Timeline: punto verde, línea y flecha */}
+              <div className="flex flex-col items-center justify-between h-full py-1">
+                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                <div className="flex-1 w-px bg-gray-300 my-1"></div>
+                <div className="w-px flex-1 bg-gray-300"></div>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </div>
+
+              {/* Textos */}
+              <div>
+                {/* Fila “Desde: Ruta actual” */}
+                <div className="flex items-baseline">
+                  <span className="text-purple-700 font-semibold">Desde:</span>
+                  <span className="ml-1 text-gray-500">Ruta actual</span>
+                </div>
+
+                {/* Línea divisoria */}
+                <hr className="border-t border-gray-200 my-2" />
+
+                {/* Fila “A: Destino Seleccionado” */}
+                <div>
+                  <span className="text-gray-500">A: Destino Seleccionado</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto py-4 space-y-4">
+        {/* Costo y Tiempo */}
+        <div className="flex justify-between px-6 mt-4">
+          <div className="flex-1 bg-bg2 border border-green-200 rounded-lg py-2 mr-2 text-center">
+            <div className="text-xs text-gray-500">Costo de Tarifa</div>
+            <div className="mt-1 text-sm font-semibold text-white">
+              Bs 2.40
+            </div>
+          </div>
+          <div className="flex-1 bg-bg1 border border-blue-200 rounded-lg py-2 ml-2 text-center">
+            <div className="text-xs text-gray-500">Tiempo Estimado</div>
+            <div className="mt-1 text-sm font-semibold text-white">
+              23 mins
+            </div>
+          </div>
+        </div>
+
+        {/* Lista de Rutas Cercanas */}
+        <div className="px-6 mt-6 flex-1 overflow-y-auto">
+          <h3 className="text-sm font-medium text-purple-700 mb-2">
+            Rutas Cercanas:
+          </h3>
           {lineasCercanas.length === 0 ? (
-            <div className="text-center text-white">
+            <div className="text-center text-gray-400 py-4">
               No se encontraron líneas
             </div>
           ) : (
-            lineasCercanas.map((linea, index) => (
-              <Button
-                key={linea._id || index}
-                className={`w-full flex items-center gap-3 px-4 py-3 font-medium transition-colors duration-300 \
-                  ${
-                    index === selectedLineaIndex
-                      ? "bg-white/15 text-white"
-                      : "text-white/80 hover:bg-white/10 hover:text-white bg-midnight"
-                  }`}
-                onClick={() => setSelectedLineaIndex(index)}
-              >
-                <h1 className="font-bold">Línea #{index + 1}</h1>
-                <p>Nombre: {linea.number}</p>
-              </Button>
-            ))
+            <div className="space-y-3">
+              {lineasCercanas.map((linea, index) => (
+                <div
+                  key={linea._id || index}
+                  className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-4 py-3 shadow"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <Bus className="w-5 h-5 text-green-600" />
+                    </div>
+                    <span className="text-gray-800 font-medium">
+                      Minibus {linea.number}
+                    </span>
+                  </div>
+                  <Button
+                    className="bg-blue-500 text-white py-1 px-4 rounded-full hover:bg-blue-600"
+                    onClick={() => setSelectedLineaIndex(index)}
+                  >
+                    Ver
+                  </Button>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
-        <div className="border-t border-variant1 pt-4">
+        {/* Cerrar panel */}
+        <div className="px-6 pb-6 pt-4">
           <Button
             onClick={() => setOpen(false)}
-            className="w-full text-center bg-white text-variant1 hover:bg-white/80 transition"
+            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200"
           >
             Cerrar panel
           </Button>
@@ -276,13 +341,13 @@ export default function HomePage() {
           variant="ghost"
           onClick={() => setOpen(!open)}
         >
-          mostrar lineas
+          mostrar líneas
         </Button>
       )}
 
       {(elegirEnMapaDestino || elegirEnMapaOrigen) && (
         <div className="absolute top-1/2 left-1/2 z-[500] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <LocateFixed className="size-9" />
+          <img src="/icons/icon-ubicacion.svg" alt="ubicacion" />
         </div>
       )}
     </div>
