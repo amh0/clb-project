@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import { LocateFixed } from "lucide-react";
 import { fetchLineasCercanas } from "@/lib/endpoints";
+import Nadvar from "@/components/nadvar";
 
 // Parche iconos Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -157,7 +158,15 @@ export default function HomePage() {
 
   return (
     <div className="relative h-screen w-screen">
-      <div className="absolute top-0 left-0 w-full z-20">
+      <div className="absolute top-0 left-0 w-full z-20 flex">
+        <div className="ml-2 mt-2">
+          <Nadvar />
+        </div>
+        <div className="m-2 flex-1 border-2 text-center text-2xl font-bold">
+          ¿A donde quieres ir?
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 w-full z-20">
         <HeaderPage
           setElegirEnMapaDestino={setElegirEnMapaDestino}
           onElegirDestinoDesdeMapa={handleElegirDestino}
@@ -175,7 +184,7 @@ export default function HomePage() {
         zoom={13}
         scrollWheelZoom={true}
         zoomControl={false}
-        className={`h-full w-full z-0 ${open ? 'pointer-events-none' : ''}`}
+        className={`h-full w-full z-0 ${open ? "pointer-events-none" : ""}`}
       >
         <LayersControl position="bottomright">
           <LayersControl.BaseLayer checked name="OSM">
@@ -186,8 +195,12 @@ export default function HomePage() {
           </LayersControl.BaseLayer>
         </LayersControl>
 
-        {elegirEnMapaDestino && <MarcadorCentral onGuardar={handleGuardarDestino} />}
-        {elegirEnMapaOrigen && <MarcadorCentral onGuardar={handleGuardarOrigen} />}
+        {elegirEnMapaDestino && (
+          <MarcadorCentral onGuardar={handleGuardarDestino} />
+        )}
+        {elegirEnMapaOrigen && (
+          <MarcadorCentral onGuardar={handleGuardarOrigen} />
+        )}
 
         {coordenadasDestino && (
           <Marker position={[coordenadasDestino.lat, coordenadasDestino.lng]}>
@@ -202,9 +215,10 @@ export default function HomePage() {
 
         {lineasCercanas[selectedLineaIndex] && (
           <Polyline
-            positions={
-              lineasCercanas[selectedLineaIndex].points.map((p) => [p.lon, p.lat])
-            }
+            positions={lineasCercanas[selectedLineaIndex].points.map((p) => [
+              p.lon,
+              p.lat,
+            ])}
             pathOptions={{ weight: 8 }}
           />
         )}
@@ -214,7 +228,9 @@ export default function HomePage() {
 
       <ResponsiveSheet open={open} onOpenChange={setOpen}>
         <SheetHeader>
-          <SheetTitle className="text-white text-xl">Líneas Encontradas</SheetTitle>
+          <SheetTitle className="text-white text-xl">
+            Líneas Encontradas
+          </SheetTitle>
           <SheetDescription className="text-white">
             Total líneas encontradas: {lineasCercanas.length}
           </SheetDescription>
@@ -222,13 +238,19 @@ export default function HomePage() {
 
         <div className="flex-1 overflow-y-auto py-4 space-y-4">
           {lineasCercanas.length === 0 ? (
-            <div className="text-center text-white">No se encontraron líneas</div>
+            <div className="text-center text-white">
+              No se encontraron líneas
+            </div>
           ) : (
             lineasCercanas.map((linea, index) => (
               <Button
                 key={linea._id || index}
                 className={`w-full flex items-center gap-3 px-4 py-3 font-medium transition-colors duration-300 \
-                  ${index === selectedLineaIndex ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white bg-midnight'}`}
+                  ${
+                    index === selectedLineaIndex
+                      ? "bg-white/15 text-white"
+                      : "text-white/80 hover:bg-white/10 hover:text-white bg-midnight"
+                  }`}
                 onClick={() => setSelectedLineaIndex(index)}
               >
                 <h1 className="font-bold">Línea #{index + 1}</h1>
@@ -239,7 +261,10 @@ export default function HomePage() {
         </div>
 
         <div className="border-t border-variant1 pt-4">
-          <Button onClick={() => setOpen(false)} className="w-full text-center bg-white text-variant1 hover:bg-white/80 transition">
+          <Button
+            onClick={() => setOpen(false)}
+            className="w-full text-center bg-white text-variant1 hover:bg-white/80 transition"
+          >
             Cerrar panel
           </Button>
         </div>

@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Crosshair, MapPin, Menu, Search, X } from "lucide-react";
+import { ChevronRight, Crosshair, MapPin, Menu, Search, X } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -39,9 +39,7 @@ export default function HeaderPage({
 
   return (
     <div className="flex border-4 border-transparent">
-      <div className="ml-2 mt-2 border-transparent border-2">
-        <Nadvar/>
-      </div>
+
 
       <div className="flex flex-col w-full">
         {/* Dialog de ORIGEN */}
@@ -49,11 +47,15 @@ export default function HeaderPage({
           <Dialog>
             <div className="flex justify-center items-center md:justify-start border-2 border-transparent">
               <DialogTrigger asChild>
-                <Input
+                {/*<Input
                   type="text"
                   placeholder="Selecciona Origen"
-                  className="mx-4 mt-2 w-full md:w-sm bg-white text-variant1 placeholder:text-variant1 border-variant1"
-                />
+                  className="mx-4 mt-2 w-full md:w-sm bg-white text-variant1 placeholder:text-bg2 border-variant1"
+                />*/}
+                <div className="mx-4 mt-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg1 flex justify-between" >
+                  <div className="text-bg2 bg-white p-2 border-1 border-bg2 font-bold rounded-2xl flex-1 text-center">Seleccionar Origen</div>
+                  <ChevronRight className="h-8 w-8 text-xl text-white my-auto mr-1"/>
+                </div>
               </DialogTrigger>
               <Button
                 variant="outline"
@@ -106,15 +108,14 @@ export default function HeaderPage({
           <Dialog>
             <div className="flex justify-center items-center md:justify-start">
               <DialogTrigger asChild>
-                <Input
-                  type="text"
-                  placeholder="Selecciona Destino"
-                  className="mx-4 mt-2 w-full md:w-sm bg-white text-back placeholder:text-variant1 border-variant1"
-                />
+                <div className="mx-4 my-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg1 flex justify-between" >
+                  <div className="text-bg2 bg-white p-2 border-1 border-bg2 font-bold rounded-2xl flex-1 text-center">Seleccionar Destino</div>
+                  <ChevronRight className="h-8 w-8 text-xl text-white my-auto mr-1"/>
+                </div>
               </DialogTrigger>
               <Button
                 variant="outline"
-                className="mt-2 mr-2 bg-variant6 hover:bg-variant6/80 cursor-pointer"
+                className="my-2 mr-2 bg-variant6 hover:bg-variant6/80 cursor-pointer"
                 onClick={handleEpmty}
               >
                 <X className="text-white" />

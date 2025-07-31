@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Route, Map, SquarePen, Heart, UserPlus, Bolt  } from "lucide-react";
+import { Menu, Route, Map, SquarePen, Heart, UserPlus, Bolt, Pencil  } from "lucide-react";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./mode-toggle";
 import {
@@ -34,7 +34,7 @@ function NavLink({
     <Link
       href={href}
       className={`w-full flex items-center gap-3 px-4 py-3 font-medium transition-colors duration-300
-        ${isActive ? "bg-white/15 text-white" : "text-white/80 hover:bg-white/10 hover:text-white"}
+        ${isActive ? "text-bg2" : "text-black hover:text-bg2"}
       `}
     >
       <Icon className="w-5 h-5 opacity-90" />
@@ -50,7 +50,7 @@ function Nadvar() {
         <SheetTrigger asChild>
           <Button
             variant="ghost"
-            className="bg-variant1 text-white hover:bg-midnight/80 transition"
+            className="bg-bg2 text-white hover:bg-midnight/80 transition"
           >
             <Menu className="w-6 h-6" />
           </Button>
@@ -60,21 +60,24 @@ function Nadvar() {
           side="left"
           className="bg-white text-black border-none"
         >
-          <SheetHeader className="realative bg-bg1">
-            <div className="h-10 w-10 rounded-full bg-amber-600 mx-auto">
+          <SheetHeader className="bg-bg1">
+            <div className="relative">
+              <div className="h-10 w-10 rounded-full bg-amber-600 mx-auto">
 
+              </div>
+              <SheetTitle className="text-2xl font-semibold tracking-tight text-white mb-12 text-center">
+                CienciaLink Bolivia
+              </SheetTitle>
+                <Button className="text-xl w-20 absolute right-0 bottom-0 border-2 border-white text-white" variant={"ghost"}>
+                  Editar
+                  <Pencil />
+                </Button>
             </div>
-            <SheetTitle className="text-2xl font-semibold tracking-tight text-white">
-              CienciaLink-App
-            </SheetTitle>
-              <Button>
-                Editar
-              </Button>
           </SheetHeader>
 
 
           <div className="mt-6 space-y-6 w-full">
-            <nav className="flex flex-col gap-2 w-full">
+            <nav className="flex flex-col gap-2 w-full text-xl">
               <NavLink href="/home" label="Planificador de rutas" icon={Route} />
               <NavLink href="/lines" label="Mostrar ruta" icon={Map} />
               <NavLink href="/lines" label="Tarifa de Transporte" icon={UserPlus} />
@@ -83,6 +86,10 @@ function Nadvar() {
               <NavLink href="/lines" label="Configuracion" icon={Bolt} />
             </nav>
           </div>
+
+          <Button className="absolute bottom-4 left-0 text-bg2 text-xl border-b-2 border-bg2">
+            Logout
+          </Button>
         </SheetContent>
       </Sheet>
     </div>
