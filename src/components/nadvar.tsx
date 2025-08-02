@@ -50,7 +50,7 @@ function Nadvar() {
         <SheetTrigger asChild>
           <Button
             variant="ghost"
-            className="bg-bg2 text-white hover:bg-midnight/80 transition"
+            className="bg-bg2 text-white transition rounded-full hover:bg-green-600 hover:text-white"
           >
             <Menu className="w-6 h-6" />
           </Button>
@@ -68,7 +68,7 @@ function Nadvar() {
               <SheetTitle className="text-2xl font-semibold tracking-tight text-white mb-12 text-center">
                 CienciaLink Bolivia
               </SheetTitle>
-                <Button className="text-xl w-20 absolute right-0 bottom-0 border-2 border-white text-white" variant={"ghost"}>
+                <Button className="text-xl absolute px-8 py-1 right-0 bottom-0 border-2 border-white text-white" variant={"ghost"}>
                   Editar
                   <Pencil />
                 </Button>
@@ -80,7 +80,7 @@ function Nadvar() {
             <nav className="flex flex-col gap-2 w-full text-xl">
               <NavLink href="/home" label="Planificador de rutas" icon={Route} />
               <NavLink href="/lines" label="Mostrar ruta" icon={Map} />
-              <NavLink href="/lines" label="Tarifa de Transporte" icon={UserPlus} />
+              <NavLink href="/tarifas" label="Tarifa de Transporte" icon={UserPlus} />
               <NavLink href="/lines" label="Redes Sociales" icon={Heart} />
               <NavLink href="/drawMap" label="Editor" icon={SquarePen} />
               <NavLink href="/lines" label="Configuracion" icon={Bolt} />

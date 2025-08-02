@@ -55,13 +55,6 @@ export default function FooterPage({
                   <ChevronRight className="h-8 w-8 text-xl text-white my-auto mr-1"/>
                 </div>
               </DialogTrigger>
-              <Button
-                variant="outline"
-                className="mt-2 mr-2 bg-variant1 hover:bg-variant2 cursor-pointer"
-                onClick={onBuscarLineas}
-              >
-                <Search className="text-white " />
-              </Button>
             </div>
             <DialogContent className="sm:max-w-md text-white bg-variant1 rounded-2xl p-6 z-[100] border-none">
               <DialogHeader>
@@ -111,13 +104,6 @@ export default function FooterPage({
                   <ChevronRight className="h-8 w-8 text-xl text-white my-auto mr-1"/>
                 </div>
               </DialogTrigger>
-              <Button
-                variant="outline"
-                className="my-2 mr-2 bg-variant6 hover:bg-variant6/80 cursor-pointer"
-                onClick={handleEpmty}
-              >
-                <X className="text-white" />
-              </Button>
             </div>
             <DialogContent className="sm:max-w-md text-white bg-variant1 rounded-2xl p-6 z-[100] border-none">
               <DialogHeader>
