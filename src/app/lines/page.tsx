@@ -1,9 +1,7 @@
 "use client";
 import Nadvar from "@/components/nadvar";
-import { Input } from "@/components/ui/input";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -11,9 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ArrowRight,
-  ChevronRight,
-  Circle,
   CircleAlert,
   CircleCheck,
 } from "lucide-react";
@@ -36,8 +31,8 @@ function LinesPage() {
         try {
           const datos = await fetchAllLineas();
           console.log("datos: ", datos.data.lines);
-          setLineas(datos.data.lines); // ✅ guarda en Zustand
-        } catch (err: any) {
+          setLineas(datos.data.lines); 
+        } catch (err: unknown ) {
           console.error(err);
           setError("No se pudieron cargar las líneas.");
         } finally {

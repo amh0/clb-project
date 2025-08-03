@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import HeaderPage from "../../components/header";
@@ -13,23 +13,15 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
-import { X, Bus, ChevronRight, LocateFixed, ChevronDown } from "lucide-react";
+import { Bus, ChevronRight, ChevronDown } from "lucide-react";
 import { fetchLineasCercanas } from "@/lib/endpoints";
-import Nadvar from "@/components/nadvar";
 import FooterPage from "@/components/footer";
+import { LineaCercana, Punto } from "@/types/linea";
 
 // Parche iconos Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -109,7 +101,7 @@ export default function HomePage() {
   );
   const cerrarDialogOrigenRef = useRef<HTMLButtonElement>(null);
 
-  const [lineasCercanas, setLineasCercanas] = useState<any[]>([]);
+  const [lineasCercanas, setLineasCercanas] = useState<LineaCercana[]>([]);
   const [selectedLineaIndex, setSelectedLineaIndex] = useState(0);
 
   const [open, setOpen] = useState(false);
@@ -142,7 +134,6 @@ export default function HomePage() {
   const handleGuardarOrigen = (coords: L.LatLng) => {
     setCoordenadasOrigen(coords);
     setElegirEnMapaOrigen(false);
-
   };
 
   const handleCloseGuardar = () => {
@@ -194,14 +185,14 @@ export default function HomePage() {
       <div className="absolute bottom-0 left-0 w-full z-20">
         {headerSeccion === 1 && (
           <FooterPage
-            setElegirEnMapaDestino={setElegirEnMapaDestino}
+            /* setElegirEnMapaDestino={setElegirEnMapaDestino} */
             onElegirDestinoDesdeMapa={handleElegirDestino}
             cerrarDialogRef={cerrarDialogRef}
-            setElegirEnMapaOrigen={setElegirEnMapaOrigen}
+            /* setElegirEnMapaOrigen={setElegirEnMapaOrigen} */
             onElegirOrigenDesdeMapa={handleElegirOrigen}
             cerrarDialogOrigenRef={cerrarDialogOrigenRef}
-            onClearUbicaciones={handleClearUbicaciones}
-            onBuscarLineas={handleBuscarLineas}
+            /* onClearUbicaciones={handleClearUbicaciones} */
+            /* onBuscarLineas={handleBuscarLineas} */
           />
         )}
       </div>
@@ -241,7 +232,7 @@ export default function HomePage() {
         {lineasCercanas[selectedLineaIndex] && (
           <Polyline
             positions={lineasCercanas[selectedLineaIndex].points.map(
-              (p: any) => [p.lon, p.lat]
+              (p: Punto) => [p.lon, p.lat]
             )}
             pathOptions={{ weight: 8 }}
           />
@@ -364,7 +355,14 @@ export default function HomePage() {
 
       {(elegirEnMapaDestino || elegirEnMapaOrigen) && (
         <div className="absolute top-1/2 left-1/2 z-[500] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <img src="/icons/icon-ubicacion.svg" alt="ubicacion" />
+          <Image
+            src="/icons/icon-ubicacion.svg"
+            alt="Ubicación"
+            width={48}
+            height={48}
+            priority
+          />
+          {/* <img src="/icons/icon-ubicacion.svg" alt="ubicacion" /> */}
         </div>
       )}
     </div>

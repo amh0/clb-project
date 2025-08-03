@@ -2,7 +2,7 @@
 
 import Nadvar from "./nadvar";
 import { Button } from "./ui/button";
-import { ChevronLeft, Search, X } from "lucide-react";
+import { ChevronLeft, Search } from "lucide-react";
 
 interface Props {
   headerSeccion: number;
@@ -11,7 +11,7 @@ interface Props {
   onBuscarLineas: () => void;
 }
 
-interface SyndicateRoute {
+/* interface SyndicateRoute {
   _id: string;
   number: number;
   syndicate: string;
@@ -33,7 +33,7 @@ interface VectorLine {
     lat: number;
     lon: number;
   }>;
-}
+} */
 
 export default function HeaderPage(props: Props) {
   const { headerSeccion, onClearUbicaciones, onCloseGuardar, onBuscarLineas } =

@@ -5,16 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Route, Map, SquarePen, Heart, UserPlus, Bolt, Pencil  } from "lucide-react";
 import { Button } from "./ui/button";
-import { ModeToggle } from "./mode-toggle";
 import {
   Sheet,
   SheetTrigger,
   SheetContent,
   SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-  SheetClose,
+  SheetTitle
 } from "./ui/sheet";
 
 // ✅ NavLink sin NavigationMenu
