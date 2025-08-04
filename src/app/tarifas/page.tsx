@@ -27,6 +27,7 @@ export default function TransportFares() {
       <NadvarPage title="Tarifas de transporte">
         <Nadvar />
       </NadvarPage>
+      <div className="bg-white px-4 py-2 mx-8 border-1 rounded-2xl mb-8">
 
       <div className="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {/* Layout responsivo con grid */}
@@ -37,7 +38,7 @@ export default function TransportFares() {
               <Card
                 key={fare.id}
                 onClick={() => setSelectedId(fare.id)}
-                className={`cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.01] ${
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.01] py-1 ${
                   isSelected
                     ? "bg-green-500 text-white border-green-500"
                     : "bg-white border-green-200 hover:border-green-300"
@@ -49,6 +50,7 @@ export default function TransportFares() {
                       <h3 className={`font-medium text-base sm:text-lg lg:text-xl ${isSelected ? "text-white" : "text-gray-900"}`}>
                         {fare.title}
                       </h3>
+                      <hr />
                       <p className={`text-sm mt-1 sm:mt-2 ${isSelected ? "text-green-100" : "text-gray-500"}`}>
                         Actualizado: {fare.date}
                       </p>
@@ -81,6 +83,7 @@ export default function TransportFares() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )
