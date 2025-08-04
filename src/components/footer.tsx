@@ -9,32 +9,33 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ChevronRight, Crosshair, MapPin, Menu, Search, X } from "lucide-react";
+import { ChevronRight, Crosshair, MapPin } from "lucide-react";
+import { RefObject } from "react";
 
 interface PropsHeader {
-  setElegirEnMapaDestino: () => void,
+  /* setElegirEnMapaDestino: () => void, */
   onElegirDestinoDesdeMapa: () => void,
-  cerrarDialogRef: () => void,
-  setElegirEnMapaOrigen: ()=> void,
+  cerrarDialogRef: RefObject<HTMLButtonElement | null>;
+  /* setElegirEnMapaOrigen: ()=> void, */
   onElegirOrigenDesdeMapa: () => void,
-  cerrarDialogOrigenRef: () => void,
-  onClearUbicaciones: () => void,
-  onBuscarLineas: () => void,
+  cerrarDialogOrigenRef: RefObject<HTMLButtonElement | null>;
+  /* onClearUbicaciones: () => void,
+  onBuscarLineas: () => void, */
 }
 
 export default function FooterPage({
-  setElegirEnMapaDestino,
+  /* setElegirEnMapaDestino, */
   onElegirDestinoDesdeMapa,
   cerrarDialogRef,
-  setElegirEnMapaOrigen,
+  /* setElegirEnMapaOrigen, */
   onElegirOrigenDesdeMapa,
   cerrarDialogOrigenRef,
-  onClearUbicaciones,
-  onBuscarLineas,
+  /* onClearUbicaciones,
+  onBuscarLineas, */
 }: PropsHeader) {
-  const handleEpmty = () => {
+  /* const handleEpmty = () => {
     onClearUbicaciones();
-  };
+  }; */
   return (
     <div className="flex">
 
