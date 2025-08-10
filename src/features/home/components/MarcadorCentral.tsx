@@ -1,7 +1,7 @@
 "use client";
-import { ChevronRight } from "lucide-react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
+import { Button } from "@/components/ui/button";
 
 interface MarcadorCentralProps {
   onGuardar: (coords: L.LatLng) => void;
@@ -17,14 +17,14 @@ export default function MarcadorCentral({ onGuardar }: MarcadorCentralProps) {
   };
 
   return (
-    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-[1000] flex w-full justify-center">
-      <button
+    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-[1000] flex w-full justify-center px-2">
+      <Button
+        variant={"variant1"}
         onClick={guardarUbicacion}
-        className="mx-4 my-2 w-full md:w-sm rounded-2xl border border-bg2 bg-bg2 p-2 text-xl font-bold text-white flex"
+        className="mx-4 my-2 w-full md:w-2xl flex rounded-full text-xl"
       >
-        <span className="flex-1">Guardar Ubicación</span>
-        <ChevronRight className="h-8 w-8 text-white" />
-      </button>
+        <span className="flex-1">Seleccionar Coordenada</span>
+      </Button>
     </div>
   );
 }

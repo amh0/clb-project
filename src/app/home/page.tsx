@@ -74,6 +74,7 @@ export default function HomePage() {
   const handleGuardarOrigen = (coords: L.LatLng) => {
     setCoordenadasOrigen(coords);
     setElegirEnMapaOrigen(false);
+    setHeaderSeccion(1);
   };
   const handleCloseGuardar = () => {
     setElegirEnMapaDestino(false);

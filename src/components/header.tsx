@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Nadvar from "./nadvar";
 import { Button } from "./ui/button";
@@ -11,104 +11,106 @@ interface Props {
   onBuscarLineas: () => void;
 }
 
-/* interface SyndicateRoute {
-  _id: string;
-  number: number;
-  syndicate: string;
-  points: Point[];
-  vectorLine: VectorLine;
-}
-
-interface Point {
-  lat: number;
-  lon: number;
-  type: 'Point';
-  coordinates: [number, number];
-  _id: string;
-}
-
-interface VectorLine {
-  _id: string;
-  vectorPoints: Array<{
-    lat: number;
-    lon: number;
-  }>;
-} */
-
 export default function HeaderPage(props: Props) {
   const { headerSeccion, onClearUbicaciones, onCloseGuardar, onBuscarLineas } =
     props;
-  const handleEpmty = () => {
-    onClearUbicaciones();
-  };
+
+  // 🔁 clases reutilizables para la barra
+  const BAR =
+    "bg-bg-light w-full grid grid-cols-[auto_1fr_auto] items-center rounded-b-2xl " +
+    "px-2 py-2 shadow-sm";
+  const TITLE = "mx-auto text-center text-white text-xl font-bold px-2";
+  const ICON_BTN =
+    "bg-bg2 text-white size-10 rounded-full hover:bg-[#108578] cursor-pointer";
+  const RIGHT_PLACEHOLDER = "w-10 h-10 mr-2"; // mismo tamaño que el botón derecho
+
+  const handleEpmty = () => onClearUbicaciones();
 
   const renderHeader = () => {
     switch (headerSeccion) {
-      case 1:
-        // 🔹 Sección 1
+      case 1: {
+        // 🔹 Sección 1 (referencia)
         return (
-          <>
-            <div className="ml-2 mt-2">
+          <div className={BAR}>
+            {/* Izquierda: navbar */}
+            <div className="pl-2">
               <Nadvar />
             </div>
-            <div className="mx-auto mt-2 border-2 text-center text-xl font-bold rounded-3xl bg-white border-bg2 shadow-2xl p-2">
-                ¿A donde quieres ir?
-            </div>
-            <Button
-              variant="outline"
-              className="mt-2 mr-2 bg-bg2 rounded-full hover:bg-green-600 cursor-pointer"
-              onClick={onBuscarLineas}
-            >
-              <Search className="text-white " />
-            </Button>
-            {/* <Button
-              variant="outline"
-              className="my-2 mr-2 bg-variant6 hover:bg-variant6/80 cursor-pointer"
-              onClick={handleEpmty}
-            >
-              <X className="text-white" />
-            </Button> */}
-          </>
-        );
 
-      case 2:
-        // 🔹 Sección 2
-        return (
-          <div className="m-2 w-full text-2xl flex items-center justify-center font-bold relative">
-            <Button
-              onClick={() => onCloseGuardar()}
-              className="bg-bg2 text-white text-xl cursor-pointer size-10 rounded-full left-0 absolute"
-            >
-              <ChevronLeft />
-            </Button>
-            Selecciona Destino
-          </div>
-        );
+            {/* Centro: título */}
+            <div className={TITLE}>¿A dónde quieres ir?</div>
 
-      case 3:
-        // 🔹 Sección 3
-        return (
-          <div className="m-2 w-full text-2xl flex items-center justify-center font-bold relative">
-            <Button
-              onClick={handleEpmty}
-              className="bg-bg2 text-white text-xl cursor-pointer size-10 rounded-full left-1 absolute"
-            >
-              <ChevronLeft />
-            </Button>
-            <div className="bg-bg2 text-white p-2 border-2 rounded-xl">
-              minibus123
+            {/* Derecha: botón buscar */}
+            <div className="pr-2">
+              <Button
+                variant="outline"
+                className={`${ICON_BTN} my-0 mr-0 bg-bg2`}
+                onClick={onBuscarLineas}
+                aria-label="Buscar líneas"
+              >
+                <Search />
+              </Button>
             </div>
           </div>
         );
+      }
+
+      case 2: {
+        // 🔹 Sección 2 — mismo estilo de barra que el caso 1
+        return (
+          <div className={BAR}>
+            {/* Izquierda: botón back */}
+            <div className="pl-2">
+              <Button
+                variant={"outline"}
+                onClick={onCloseGuardar}
+                className={ICON_BTN}
+                aria-label="Volver"
+              >
+                <ChevronLeft />
+              </Button>
+            </div>
+
+            {/* Centro: título */}
+            <div className={TITLE}>Selecciona Destino</div>
+
+            {/* Derecha: placeholder para mantener centrado el título */}
+            <div className={RIGHT_PLACEHOLDER} />
+          </div>
+        );
+      }
+
+      case 3: {
+        // 🔹 Sección 3 — mismo estilo de barra que el caso 1
+        return (
+          <div className={BAR}>
+            {/* Izquierda: botón back (limpia) */}
+            <div className="pl-2">
+              <Button
+                variant={"outline"}
+                onClick={handleEpmty}
+                className={ICON_BTN}
+                aria-label="Volver"
+              >
+                <ChevronLeft />
+              </Button>
+            </div>
+
+            {/* Centro: puedes usar texto o una “pill” */}
+            <div className={TITLE}>Rutas Cercanas</div>
+
+            {/* Derecha: placeholder para mantener centrado el contenido */}
+            <div className={RIGHT_PLACEHOLDER} />
+          </div>
+        );
+      }
 
       default:
-        return null; // puedes mostrar un header por defecto si quieres
+        return null;
     }
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full z-20 flex items-center">
-      {renderHeader()}
-    </div>
+    <div className="absolute top-0 left-0 w-full z-20">{renderHeader()}</div>
   );
 }

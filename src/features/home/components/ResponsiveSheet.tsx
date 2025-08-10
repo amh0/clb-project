@@ -50,7 +50,7 @@ export default function ResponsiveSheet({
           <div className="relative m-4 rounded-2xl bg-white shadow-lg p-4">
             <div className="grid grid-cols-[auto_1fr] gap-4 items-stretch">
               <div className="flex flex-col items-center justify-between h-full py-1">
-                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                <span className="w-3 h-3 bg-bg-light rounded-full"></span>
                 <div className="flex-1 w-px bg-gray-300 my-1"></div>
                 <div className="w-px flex-1 bg-gray-300"></div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -71,8 +71,8 @@ export default function ResponsiveSheet({
         </div>
 
         {/* Lista de rutas cercanas */}
-        <div className="px-6 mt-6 flex-1 overflow-y-auto">
-          <h3 className="text-sm font-medium text-black mb-2">Rutas Cercanas:</h3>
+        <h3 className="px-6 text-sm font-medium text-black mb-2">Rutas Cercanas:</h3>
+        <div className="px-6 mt-1 flex-1 overflow-y-auto">
           {lineasCercanas.length === 0 ? (
             <div className="text-center text-gray-400 py-4">No se encontraron líneas</div>
           ) : (
@@ -81,17 +81,18 @@ export default function ResponsiveSheet({
                 <div
                   key={linea._id || index}
                   className={`flex items-center justify-between ${
-                    selectedLineaIndex === index ? "bg-bg2" : "bg-white"
-                  } border border-gray-100 rounded-xl px-4 py-3 shadow`}
+                    selectedLineaIndex === index ? "bg-bg-light/50" : "bg-white"
+                  } border border-gray-100 rounded-xl px-4 py-3 shadow-xl `}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-full">
-                      <Bus className="w-5 h-5 text-green-600" />
+                    <div className="p-2 bg-[#1abc9c] rounded-full">
+                      <Bus className="w-5 h-5 text-black/80" />
                     </div>
                     <span className="text-bg1 font-medium">Minibus {linea.number}</span>
                   </div>
                   <Button
-                    className="bg-blue-500 text-white py-1 px-4 rounded-full hover:bg-blue-600"
+                    variant={"variant1"}
+                    className="py-1 px-4"
                     onClick={() => setSelectedLineaIndex(index)}
                   >
                     Ver

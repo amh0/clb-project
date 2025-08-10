@@ -30,7 +30,7 @@ function NavLink({
     <Link
       href={href}
       className={`w-full flex items-center gap-3 px-4 py-3 font-medium transition-colors duration-300
-        ${isActive ? "text-bg2" : "text-black hover:text-bg2"}
+        ${isActive ? "text-bg-light" : "text-black hover:text-bg2"}
       `}
     >
       <Icon className="w-5 h-5 opacity-90" />
@@ -45,7 +45,7 @@ function Nadvar() {
       <Sheet>
         <SheetTrigger asChild>
           <Button
-            variant="ghost"
+            variant="outline"
             className="bg-bg2 text-white transition rounded-full hover:bg-green-600 hover:text-white"
           >
             <Menu className="w-6 h-6" />
@@ -56,7 +56,7 @@ function Nadvar() {
           side="left"
           className="bg-white text-black border-none"
         >
-          <SheetHeader className="bg-bg1">
+          <SheetHeader className="bg-bg-light">
             <div className="relative">
               <div className="h-10 w-10 rounded-full bg-amber-600 mx-auto">
 
@@ -83,7 +83,7 @@ function Nadvar() {
             </nav>
           </div>
 
-          <Button className="absolute bottom-4 left-0 text-bg2 text-xl border-b-2 border-bg2">
+          <Button className="absolute bottom-4 right-1 text-bg2 text-xl border-b-2 border-bg2">
             Logout
           </Button>
         </SheetContent>

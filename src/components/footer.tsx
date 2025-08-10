@@ -1,23 +1,21 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ChevronRight, Crosshair, MapPin } from "lucide-react";
+import { Crosshair, MapPin } from "lucide-react";
 import { RefObject } from "react";
 
 interface PropsHeader {
   /* setElegirEnMapaDestino: () => void, */
-  onElegirDestinoDesdeMapa: () => void,
+  onElegirDestinoDesdeMapa: () => void;
   cerrarDialogRef: RefObject<HTMLButtonElement | null>;
   /* setElegirEnMapaOrigen: ()=> void, */
-  onElegirOrigenDesdeMapa: () => void,
+  onElegirOrigenDesdeMapa: () => void;
   cerrarDialogOrigenRef: RefObject<HTMLButtonElement | null>;
   /* onClearUbicaciones: () => void,
   onBuscarLineas: () => void, */
@@ -26,71 +24,56 @@ interface PropsHeader {
 export default function FooterPage({
   /* setElegirEnMapaDestino, */
   onElegirDestinoDesdeMapa,
-  cerrarDialogRef,
+  /* cerrarDialogRef, */
   /* setElegirEnMapaOrigen, */
   onElegirOrigenDesdeMapa,
-  cerrarDialogOrigenRef,
-  /* onClearUbicaciones,
+  /* cerrarDialogOrigenRef, */
+}: /* onClearUbicaciones,
   onBuscarLineas, */
-}: PropsHeader) {
+PropsHeader) {
   /* const handleEpmty = () => {
     onClearUbicaciones();
   }; */
   return (
     <div className="flex">
-
-
       <div className="flex flex-col w-full">
         {/* Dialog de ORIGEN */}
         <div className="border-2 border-transparent">
           <Dialog>
             <div className="flex justify-center items-center md:justify-start border-2 border-transparent">
               <DialogTrigger asChild>
-                {/*<Input
-                  type="text"
-                  placeholder="Selecciona Origen"
-                  className="mx-4 mt-2 w-full md:w-sm bg-white text-variant1 placeholder:text-bg2 border-variant1"
-                />*/}
-                <div className="mx-4 mt-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg1 flex justify-between" >
-                  <div className="text-bg2 bg-white p-2 border-1 border-bg2 font-bold rounded-2xl flex-1 text-center">Seleccionar Origen</div>
-                  <ChevronRight className="h-8 w-8 text-xl text-white my-auto mr-1"/>
+                <div className="mx-4 mt-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg-light flex justify-between cursor-pointer">
+                  <p className="text-white p-2 font-bold flex-1 text-center">
+                    Seleccionar Origen
+                  </p>
                 </div>
               </DialogTrigger>
             </div>
-            <DialogContent className="sm:max-w-md text-white bg-variant1 rounded-2xl p-6 z-[100] border-none">
+            <DialogContent className="sm:max-w-md bg-white text-black rounded-2xl p-6 z-[100] border-none">
               <DialogHeader>
-                <DialogTitle className="text-start">Punto de Origen</DialogTitle>
+                <DialogTitle className="text-start">
+                  Seleccionar Origen
+                </DialogTitle>
               </DialogHeader>
               <div className="flex flex-col items-center gap-2">
                 <div className="grid flex-1 gap-2 w-full">
                   <Input
                     type="text"
-                    placeholder="Ingrese punto de origen"
-                    className="w-full"
+                    placeholder="Ingrese el nombre del origen"
+                    className="w-full border border-[#14a292]text-gray-700 placeholder:text-gray-400 caret-[#14a292] focus-visible:outline-none focus-visible:border-[#14a292] focus-visible:ring-2 focus-visible:ring-[#14a292] focus-visible:ring-offset-2 hover:shadow-[0_0_0_2px_rgba(20,162,146,0.12)]"
                   />
                 </div>
                 <Button variant="ghost" className="w-full dark:text-white">
-                  <Crosshair /> Su ubicación
+                  <Crosshair /> Su ubicación actual
                 </Button>
                 <Button
-                  variant="ghost"
-                  className="w-full dark:text-white"
+                  variant={"variant1"}
+                  className="w-full"
                   onClick={onElegirOrigenDesdeMapa}
                 >
-                  <MapPin /> Elegir en el mapa
+                  <MapPin /> Buscar en el mapa
                 </Button>
               </div>
-              <DialogFooter className="sm:justify-start">
-                <DialogClose asChild>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    ref={cerrarDialogOrigenRef}
-                  >
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
@@ -100,47 +83,39 @@ export default function FooterPage({
           <Dialog>
             <div className="flex justify-center items-center md:justify-start">
               <DialogTrigger asChild>
-                <div className="mx-4 my-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg1 flex justify-between" >
-                  <div className="text-bg2 bg-white p-2 border-1 border-bg2 font-bold rounded-2xl flex-1 text-center">Seleccionar Destino</div>
-                  <ChevronRight className="h-8 w-8 text-xl text-white my-auto mr-1"/>
+                <div className="mx-4 my-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg-light flex justify-between cursor-pointer">
+                  <p className="text-white p-2 font-bold flex-1 text-center">
+                    Seleccionar Destino
+                  </p>
                 </div>
               </DialogTrigger>
             </div>
-            <DialogContent className="sm:max-w-md text-white bg-variant1 rounded-2xl p-6 z-[100] border-none">
+            <DialogContent className="sm:max-w-md text-black bg-white rounded-2xl p-6 z-[100] border-none">
               <DialogHeader>
-                <DialogTitle className="text-start">Punto de Destino</DialogTitle>
+                <DialogTitle className="text-start">
+                  Seleccionar Destino
+                </DialogTitle>
               </DialogHeader>
               <div className="flex flex-col items-center gap-2">
                 <div className="grid flex-1 gap-2 w-full">
                   <Input
                     type="text"
                     placeholder="Ingrese punto de Destino"
-                    className="w-full"
+                    className="w-full border border-[#14a292]text-gray-700 placeholder:text-gray-400 caret-[#14a292] focus-visible:outline-none focus-visible:border-[#14a292] focus-visible:ring-2 focus-visible:ring-[#14a292] focus-visible:ring-offset-2 hover:shadow-[0_0_0_2px_rgba(20,162,146,0.12)]"
+
                   />
                 </div>
                 <Button variant="ghost" className="w-full dark:text-white">
-                  <Crosshair /> Su ubicación
+                  <Crosshair /> Su ubicación actual
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="variant1"
                   className="w-full dark:text-white"
                   onClick={onElegirDestinoDesdeMapa}
                 >
-                  <MapPin /> Elegir en el mapa
+                  <MapPin /> Buscar en el mapa
                 </Button>
               </div>
-              <DialogFooter className="sm:justify-start">
-                <DialogClose asChild>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    className="bg-white"
-                    ref={cerrarDialogRef}
-                  >
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
