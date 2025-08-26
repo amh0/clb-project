@@ -2,6 +2,7 @@
 import "leaflet/dist/leaflet.css";
 import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { LatLng } from "leaflet";
 
 import HeaderPage from "../../components/header";
 import FooterPage from "@/components/footer";
@@ -35,12 +36,10 @@ export default function HomePage() {
   const [elegirEnMapaDestino, setElegirEnMapaDestino] = useState(false);
   const [coordenadasDestino, setCoordenadasDestino] =
     useState<L.LatLng | null>(null);
-  const cerrarDialogRef = useRef<HTMLButtonElement>(null);
 
   const [elegirEnMapaOrigen, setElegirEnMapaOrigen] = useState(false);
   const [coordenadasOrigen, setCoordenadasOrigen] =
     useState<L.LatLng | null>(null);
-  const cerrarDialogOrigenRef = useRef<HTMLButtonElement>(null);
 
   const [lineasCercanas, setLineasCercanas] = useState<LineaCercana[]>([]);
   const [selectedLineaIndex, setSelectedLineaIndex] = useState(0);
@@ -59,12 +58,10 @@ export default function HomePage() {
   const handleElegirDestino = () => {
     setElegirEnMapaDestino(true);
     setHeaderSeccion(2);
-    cerrarDialogRef.current?.click();
   };
   const handleElegirOrigen = () => {
     setElegirEnMapaOrigen(true);
     setHeaderSeccion(2);
-    cerrarDialogOrigenRef.current?.click();
   };
   const handleGuardarDestino = (coords: L.LatLng) => {
     setCoordenadasDestino(coords);
@@ -76,6 +73,29 @@ export default function HomePage() {
     setElegirEnMapaOrigen(false);
     setHeaderSeccion(1);
   };
+
+  const handleSetCurrentLocation = (type: "origen" | "destino") => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const newCoords = new LatLng(latitude, longitude);
+          if (type === "origen") {
+            setCoordenadasOrigen(newCoords);
+          } else {
+            setCoordenadasDestino(newCoords);
+          }
+        },
+        (error) => {
+          console.error("Error getting location", error);
+          alert("No se pudo obtener la ubicación actual.");
+        }
+      );
+    } else {
+      alert("La geolocalización no es soportada por este navegador.");
+    }
+  };
+
   const handleCloseGuardar = () => {
     setElegirEnMapaDestino(false);
     setElegirEnMapaOrigen(false);
@@ -127,9 +147,9 @@ export default function HomePage() {
         {headerSeccion === 1 && (
           <FooterPage
             onElegirDestinoDesdeMapa={handleElegirDestino}
-            cerrarDialogRef={cerrarDialogRef}
             onElegirOrigenDesdeMapa={handleElegirOrigen}
-            cerrarDialogOrigenRef={cerrarDialogOrigenRef}
+            onSetCurrentLocationAsOrigin={() => handleSetCurrentLocation('origen')}
+            onSetCurrentLocationAsDestination={() => handleSetCurrentLocation('destino')}
           />
         )}
       </div>

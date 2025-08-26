@@ -8,38 +8,50 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Crosshair, MapPin } from "lucide-react";
-import { RefObject } from "react";
+import { useState } from "react";
 
 interface PropsHeader {
-  /* setElegirEnMapaDestino: () => void, */
   onElegirDestinoDesdeMapa: () => void;
-  cerrarDialogRef: RefObject<HTMLButtonElement | null>;
-  /* setElegirEnMapaOrigen: ()=> void, */
   onElegirOrigenDesdeMapa: () => void;
-  cerrarDialogOrigenRef: RefObject<HTMLButtonElement | null>;
-  /* onClearUbicaciones: () => void,
-  onBuscarLineas: () => void, */
+  onSetCurrentLocationAsOrigin: () => void;
+  onSetCurrentLocationAsDestination: () => void;
 }
 
 export default function FooterPage({
-  /* setElegirEnMapaDestino, */
   onElegirDestinoDesdeMapa,
-  /* cerrarDialogRef, */
-  /* setElegirEnMapaOrigen, */
   onElegirOrigenDesdeMapa,
-  /* cerrarDialogOrigenRef, */
-}: /* onClearUbicaciones,
-  onBuscarLineas, */
-PropsHeader) {
-  /* const handleEpmty = () => {
-    onClearUbicaciones();
-  }; */
+  onSetCurrentLocationAsOrigin,
+  onSetCurrentLocationAsDestination,
+}: PropsHeader) {
+  const [origenOpen, setOrigenOpen] = useState(false);
+  const [destinoOpen, setDestinoOpen] = useState(false);
+
+  const handleOrigenCurrentLocation = () => {
+    onSetCurrentLocationAsOrigin();
+    setOrigenOpen(false);
+  };
+
+  const handleDestinoCurrentLocation = () => {
+    onSetCurrentLocationAsDestination();
+    setDestinoOpen(false);
+  };
+
+  const handleElegirOrigenMapa = () => {
+    onElegirOrigenDesdeMapa();
+    setOrigenOpen(false);
+  };
+
+  const handleElegirDestinoMapa = () => {
+    onElegirDestinoDesdeMapa();
+    setDestinoOpen(false);
+  };
+
   return (
     <div className="flex">
       <div className="flex flex-col w-full">
         {/* Dialog de ORIGEN */}
         <div className="border-2 border-transparent">
-          <Dialog>
+          <Dialog open={origenOpen} onOpenChange={setOrigenOpen}>
             <div className="flex justify-center items-center md:justify-start border-2 border-transparent">
               <DialogTrigger asChild>
                 <div className="mx-4 mt-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg-light flex justify-between cursor-pointer">
@@ -63,13 +75,17 @@ PropsHeader) {
                     className="w-full border border-[#14a292]text-gray-700 placeholder:text-gray-400 caret-[#14a292] focus-visible:outline-none focus-visible:border-[#14a292] focus-visible:ring-2 focus-visible:ring-[#14a292] focus-visible:ring-offset-2 hover:shadow-[0_0_0_2px_rgba(20,162,146,0.12)]"
                   />
                 </div>
-                <Button variant="ghost" className="w-full dark:text-white">
+                <Button
+                  variant="ghost"
+                  className="w-full dark:text-white"
+                  onClick={handleOrigenCurrentLocation}
+                >
                   <Crosshair /> Su ubicación actual
                 </Button>
                 <Button
                   variant={"variant1"}
                   className="w-full"
-                  onClick={onElegirOrigenDesdeMapa}
+                  onClick={handleElegirOrigenMapa}
                 >
                   <MapPin /> Buscar en el mapa
                 </Button>
@@ -80,7 +96,7 @@ PropsHeader) {
 
         {/* Dialog de DESTINO */}
         <div>
-          <Dialog>
+          <Dialog open={destinoOpen} onOpenChange={setDestinoOpen}>
             <div className="flex justify-center items-center md:justify-start">
               <DialogTrigger asChild>
                 <div className="mx-4 my-2 w-full md:w-sm rounded-2xl border-1 border-bg1 text-xl bg-bg-light flex justify-between cursor-pointer">
@@ -102,16 +118,19 @@ PropsHeader) {
                     type="text"
                     placeholder="Ingrese punto de Destino"
                     className="w-full border border-[#14a292]text-gray-700 placeholder:text-gray-400 caret-[#14a292] focus-visible:outline-none focus-visible:border-[#14a292] focus-visible:ring-2 focus-visible:ring-[#14a292] focus-visible:ring-offset-2 hover:shadow-[0_0_0_2px_rgba(20,162,146,0.12)]"
-
                   />
                 </div>
-                <Button variant="ghost" className="w-full dark:text-white">
+                <Button
+                  variant="ghost"
+                  className="w-full dark:text-white"
+                  onClick={handleDestinoCurrentLocation}
+                >
                   <Crosshair /> Su ubicación actual
                 </Button>
                 <Button
                   variant="variant1"
                   className="w-full dark:text-white"
-                  onClick={onElegirDestinoDesdeMapa}
+                  onClick={handleElegirDestinoMapa}
                 >
                   <MapPin /> Buscar en el mapa
                 </Button>
