@@ -1,16 +1,16 @@
 "use client";
 import "leaflet/dist/leaflet.css";
-import { useState, useRef, useEffect } from "react";
+import { useEffect } from "react";
 import dynamic from "next/dynamic";
-import { LatLng } from "leaflet";
+import { useMapStore } from "@/stores/useMapStore";
 
 import HeaderPage from "../../components/header";
 import FooterPage from "@/components/footer";
-import { fetchLineasCercanas } from "@/lib/endpoints";
-import { LineaCercana } from "@/types/linea";
 import ResponsiveSheet from "@/features/home/components/ResponsiveSheet";
 import ShowLinesButton from "@/features/home/components/ShowLinesButton";
 import CentralIcon from "@/features/home/components/CentralIcon";
+
+import { initializeLeafletIcons } from "@/lib/utils";
 
 // Cargamos MapSection **solo en cliente**, sin SSR
 const MapSection = dynamic(
@@ -19,137 +19,64 @@ const MapSection = dynamic(
 );
 
 export default function HomePage() {
-  // parche de íconos Leaflet en cliente
+  const {
+    elegirEnMapaDestino,
+    elegirEnMapaOrigen,
+    coordenadasDestino,
+    coordenadasOrigen,
+    lineasCercanas,
+    selectedLineaIndex,
+    isSheetOpen,
+    headerSeccion,
+    startElegirDestino,
+    startElegirOrigen,
+    setCoordenadasDestino,
+    setCoordenadasOrigen,
+    handleSetCurrentLocation,
+    stopElegirUbicacion,
+    clearUbicaciones,
+    buscarLineasCercanas,
+    setIsSheetOpen,
+    setSelectedLineaIndex,
+  } = useMapStore();
+
   useEffect(() => {
-    // nada de window en servidor
-    import("leaflet").then((L) => {
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-      });
-    });
+    initializeLeafletIcons();
   }, []);
-
-  // ===================== Estado =====================
-  const [elegirEnMapaDestino, setElegirEnMapaDestino] = useState(false);
-  const [coordenadasDestino, setCoordenadasDestino] =
-    useState<L.LatLng | null>(null);
-
-  const [elegirEnMapaOrigen, setElegirEnMapaOrigen] = useState(false);
-  const [coordenadasOrigen, setCoordenadasOrigen] =
-    useState<L.LatLng | null>(null);
-
-  const [lineasCercanas, setLineasCercanas] = useState<LineaCercana[]>([]);
-  const [selectedLineaIndex, setSelectedLineaIndex] = useState(0);
-
-  const [open, setOpen] = useState(false);
-  const [headerSeccion, setHeaderSeccion] = useState<1 | 2 | 3>(1);
 
   // Sincronizar índice
   useEffect(() => {
     if (lineasCercanas.length > 0) {
       setSelectedLineaIndex(0);
     }
-  }, [lineasCercanas]);
-
-  // Handlers UI
-  const handleElegirDestino = () => {
-    setElegirEnMapaDestino(true);
-    setHeaderSeccion(2);
-  };
-  const handleElegirOrigen = () => {
-    setElegirEnMapaOrigen(true);
-    setHeaderSeccion(2);
-  };
-  const handleGuardarDestino = (coords: L.LatLng) => {
-    setCoordenadasDestino(coords);
-    setElegirEnMapaDestino(false);
-    setHeaderSeccion(1);
-  };
-  const handleGuardarOrigen = (coords: L.LatLng) => {
-    setCoordenadasOrigen(coords);
-    setElegirEnMapaOrigen(false);
-    setHeaderSeccion(1);
-  };
-
-  const handleSetCurrentLocation = (type: "origen" | "destino") => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const newCoords = new LatLng(latitude, longitude);
-          if (type === "origen") {
-            setCoordenadasOrigen(newCoords);
-          } else {
-            setCoordenadasDestino(newCoords);
-          }
-        },
-        (error) => {
-          console.error("Error getting location", error);
-          alert("No se pudo obtener la ubicación actual.");
-        }
-      );
-    } else {
-      alert("La geolocalización no es soportada por este navegador.");
-    }
-  };
-
-  const handleCloseGuardar = () => {
-    setElegirEnMapaDestino(false);
-    setElegirEnMapaOrigen(false);
-    setHeaderSeccion(1);
-  };
-  const handleClearUbicaciones = () => {
-    setElegirEnMapaDestino(false);
-    setElegirEnMapaOrigen(false);
-    setCoordenadasDestino(null);
-    setCoordenadasOrigen(null);
-    setHeaderSeccion(1);
-    setLineasCercanas([]);
-  };
-  const handleBuscarLineas = async () => {
-    if (!coordenadasDestino) {
-      alert("Primero seleccione el punto de destino en el mapa");
-      return;
-    }
-    setOpen(true);
-    setHeaderSeccion(3);
-    try {
-      const response = await fetchLineasCercanas(
-        coordenadasDestino.lng,
-        coordenadasDestino.lat
-      );
-      setLineasCercanas(response.data.lines);
-    } catch (error) {
-      console.error("Error al buscar líneas cercanas:", error);
-    }
-  };
+  }, [lineasCercanas, setSelectedLineaIndex]);
 
   // ==== Render ====
   return (
     <div className="relative h-screen w-screen">
       <style jsx global>{`
-        .leaflet-top.leaflet-left {
+        .leaflet-top.leaflet-right {
           top: 4rem !important;
+          right: 1rem !important;
         }
       `}</style>
 
       <HeaderPage
         headerSeccion={headerSeccion}
-        onClearUbicaciones={handleClearUbicaciones}
-        onCloseGuardar={handleCloseGuardar}
-        onBuscarLineas={handleBuscarLineas}
+        onClearUbicaciones={clearUbicaciones}
+        onCloseGuardar={stopElegirUbicacion}
+        onBuscarLineas={buscarLineasCercanas}
       />
 
-      <div className="absolute bottom-0 left-0 w-full z-20">
+      <div className="absolute bottom-0 left-0 w-full z-20 lg:top-[60px] lg:bottom-auto ">
         {headerSeccion === 1 && (
           <FooterPage
-            onElegirDestinoDesdeMapa={handleElegirDestino}
-            onElegirOrigenDesdeMapa={handleElegirOrigen}
+            onElegirDestinoDesdeMapa={startElegirDestino}
+            onElegirOrigenDesdeMapa={startElegirOrigen}
             onSetCurrentLocationAsOrigin={() => handleSetCurrentLocation('origen')}
             onSetCurrentLocationAsDestination={() => handleSetCurrentLocation('destino')}
+            onGuardarOrigen={setCoordenadasOrigen}
+            onGuardarDestino={setCoordenadasDestino}
           />
         )}
       </div>
@@ -161,14 +88,14 @@ export default function HomePage() {
         coordenadasOrigen={coordenadasOrigen}
         lineasCercanas={lineasCercanas}
         selectedLineaIndex={selectedLineaIndex}
-        onGuardarDestino={handleGuardarDestino}
-        onGuardarOrigen={handleGuardarOrigen}
-        mapDisabled={open}
+        onGuardarDestino={setCoordenadasDestino}
+        onGuardarOrigen={setCoordenadasOrigen}
+        mapDisabled={isSheetOpen}
       />
 
       <ResponsiveSheet
-        open={open}
-        onOpenChange={setOpen}
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
         lineasCercanas={lineasCercanas}
         selectedLineaIndex={selectedLineaIndex}
         setSelectedLineaIndex={setSelectedLineaIndex}
@@ -176,7 +103,7 @@ export default function HomePage() {
 
       <ShowLinesButton
         visible={lineasCercanas.length > 0}
-        onClick={() => setOpen(!open)}
+        onClick={() => setIsSheetOpen(!isSheetOpen)}
       />
 
       <CentralIcon

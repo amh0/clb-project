@@ -20,7 +20,8 @@ const MapContainer = dynamic(() => import('react-leaflet').then(m => m.MapContai
 const TileLayer = dynamic(() => import('react-leaflet').then(m => m.TileLayer), { ssr: false });
 const Polyline = dynamic(() => import('react-leaflet').then(m => m.Polyline), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(m => m.Marker), { ssr: false });
-import type { LatLngExpression } from 'leaflet';
+import type { LatLngExpression, Map } from 'leaflet';
+import L from 'leaflet';
 
 /**
  * Recordatorio de convención BACKEND actual:
@@ -30,6 +31,12 @@ import type { LatLngExpression } from 'leaflet';
  *
  * Para el mapa (Leaflet) necesitamos [latReal, lonReal] => [p.lon, p.lat]
  */
+
+interface LineaPayload {
+  number: string;
+  syndicate?: string;
+  points: { lat: number; lon: number }[];
+}
 
 export default function LinesDashboardPage() {
   const router = useRouter();
@@ -47,10 +54,9 @@ export default function LinesDashboardPage() {
   );
 
   // Fit bounds al cargar/tener puntos
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<Map>(null);
   useEffect(() => {
     if (mapRef.current && positions.length) {
-      const L = require('leaflet');
       const bounds = L.latLngBounds(positions as [number, number][]);
       mapRef.current.fitBounds(bounds, { padding: [20, 20] });
     }
@@ -66,19 +72,19 @@ export default function LinesDashboardPage() {
     setSaving(true);
     setMsg(null);
     try {
-      const payload = {
+      const payload: LineaPayload = {
         number: number.trim(),
         syndicate: syndicate.trim() || undefined,
         points, // ya están en formato backend { lat: lonReal, lon: latReal }
-        // Si tu backend admite metadatos opcionales, podrías enviar "notes" aquí.
-      } as any;
+      };
 
       await createLinea(payload);
       setMsg('✅ Línea creada correctamente.');
       clear();
       // router.push('/lines'); // Opcional: ir al mapa general para verla
-    } catch (e: any) {
-      setMsg(`❌ Error al crear la línea: ${e?.message || 'desconocido'}`);
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : 'desconocido';
+      setMsg(`❌ Error al crear la línea: ${errorMessage}`);
     } finally {
       setSaving(false);
     }

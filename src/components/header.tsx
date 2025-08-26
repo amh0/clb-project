@@ -3,17 +3,15 @@
 import Nadvar from "./nadvar";
 import { Button } from "./ui/button";
 import { ChevronLeft, Search } from "lucide-react";
+import { useMapStore } from "@/stores/useMapStore";
 
-interface Props {
-  headerSeccion: number;
-  onClearUbicaciones: () => void;
-  onCloseGuardar: () => void;
-  onBuscarLineas: () => void;
-}
-
-export default function HeaderPage(props: Props) {
-  const { headerSeccion, onClearUbicaciones, onCloseGuardar, onBuscarLineas } =
-    props;
+export default function HeaderPage() {
+  const {
+    headerSeccion,
+    clearUbicaciones,
+    stopElegirUbicacion,
+    buscarLineasCercanas,
+  } = useMapStore();
 
   // 🔁 clases reutilizables para la barra
   const BAR =
@@ -24,7 +22,7 @@ export default function HeaderPage(props: Props) {
     "bg-bg2 text-white size-10 rounded-full hover:bg-[#108578] cursor-pointer";
   const RIGHT_PLACEHOLDER = "w-10 h-10 mr-2"; // mismo tamaño que el botón derecho
 
-  const handleEpmty = () => onClearUbicaciones();
+  const handleEpmty = () => clearUbicaciones();
 
   const renderHeader = () => {
     switch (headerSeccion) {
@@ -45,7 +43,7 @@ export default function HeaderPage(props: Props) {
               <Button
                 variant="outline"
                 className={`${ICON_BTN} my-0 mr-0 bg-bg2`}
-                onClick={onBuscarLineas}
+                onClick={buscarLineasCercanas}
                 aria-label="Buscar líneas"
               >
                 <Search />
@@ -63,7 +61,7 @@ export default function HeaderPage(props: Props) {
             <div className="pl-2">
               <Button
                 variant={"outline"}
-                onClick={onCloseGuardar}
+                onClick={stopElegirUbicacion}
                 className={ICON_BTN}
                 aria-label="Volver"
               >

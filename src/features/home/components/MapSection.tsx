@@ -11,41 +11,32 @@ import {
 import L from "leaflet";
 import MarcadorCentral from "./MarcadorCentral";
 import { Punto, LineaCercana } from "@/types/linea";
-
-interface MapSectionProps {
-  elegirDestino: boolean;
-  elegirOrigen: boolean;
-  coordenadasDestino: L.LatLng | null;
-  coordenadasOrigen: L.LatLng | null;
-  lineasCercanas: LineaCercana[];
-  selectedLineaIndex: number;
-  onGuardarDestino: (coords: L.LatLng) => void;
-  onGuardarOrigen: (coords: L.LatLng) => void;
-  mapDisabled?: boolean;
-}
+import { useMapStore } from "@/stores/useMapStore";
 
 const DEFAULT_POSITION: [number, number] = [-16.5, -68.15];
 
-export default function MapSection({
-  elegirDestino,
-  elegirOrigen,
-  coordenadasDestino,
-  coordenadasOrigen,
-  lineasCercanas,
-  selectedLineaIndex,
-  onGuardarDestino,
-  onGuardarOrigen,
-  mapDisabled = false,
-}: MapSectionProps) {
+export default function MapSection() {
+  const {
+    elegirEnMapaDestino,
+    elegirEnMapaOrigen,
+    coordenadasDestino,
+    coordenadasOrigen,
+    lineasCercanas,
+    selectedLineaIndex,
+    setCoordenadasDestino,
+    setCoordenadasOrigen,
+    isSheetOpen,
+  } = useMapStore();
+
   return (
     <MapContainer
       center={DEFAULT_POSITION}
       zoom={13}
       scrollWheelZoom
       zoomControl={false}
-      className={`h-full w-full z-0 ${mapDisabled ? "pointer-events-none" : ""}`}
+      className={`h-full w-full z-0 ${isSheetOpen ? "pointer-events-none" : ""}`}
     >
-      <LayersControl position="topleft">
+      <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="OSM">
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         </LayersControl.BaseLayer>
@@ -54,8 +45,8 @@ export default function MapSection({
         </LayersControl.BaseLayer>
       </LayersControl>
 
-      {elegirDestino && <MarcadorCentral onGuardar={onGuardarDestino} />}
-      {elegirOrigen && <MarcadorCentral onGuardar={onGuardarOrigen} />}
+      {elegirEnMapaDestino && <MarcadorCentral onGuardar={setCoordenadasDestino} />}
+      {elegirEnMapaOrigen && <MarcadorCentral onGuardar={setCoordenadasOrigen} />}
 
       {coordenadasDestino && (
         <Marker position={[coordenadasDestino.lat, coordenadasDestino.lng]}>
@@ -75,7 +66,7 @@ export default function MapSection({
         />
       )}
 
-      <ZoomControl position="topleft" />
+      <ZoomControl position="topright" />
     </MapContainer>
   );
 }

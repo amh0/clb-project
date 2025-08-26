@@ -37,29 +37,7 @@ import {
 } from '@/components/ui/tabs'
 
 import { useRouteDraftStore } from '@/stores/routeDraftStore'
-
-// Utilidades
-function dedupeConsecutive(points: [number, number][]) {
-  const out: [number, number][] = []
-  for (const p of points) {
-    const last = out[out.length - 1]
-    if (!last || Math.abs(last[0] - p[0]) > 1e-9 || Math.abs(last[1] - p[1]) > 1e-9) {
-      out.push(p)
-    }
-  }
-  return out
-}
-function round6(n: number) {
-  return Math.round(n * 1e6) / 1e6
-}
-
-function ChangeMapView({ center }: { center: [number, number] }) {
-  const map = useMap()
-  useEffect(() => {
-    map.setView(center, map.getZoom())
-  }, [center, map])
-  return null
-}
+import { dedupeConsecutive, round6 } from '@/lib/utils'
 
 const smallIcon = L.divIcon({
   html: '<div style="background-color:#0e6e60;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>',
@@ -93,6 +71,15 @@ export default function DrawMapClient() {
 
   // ref mapa para fitBounds
   const mapRef = useRef<L.Map | null>(null)
+
+  useEffect(() => {
+    if (mapRef.current && ruta.length > 0) {
+      const bounds = L.latLngBounds(ruta as [number, number][]);
+      mapRef.current.fitBounds(bounds, { padding: [24, 24] });
+    } else if (mapRef.current) {
+      mapRef.current.setView([-16.5, -68.15], 15);
+    }
+  }, [ruta]);
 
   const parseInput = (): [number, number][] => {
     try {
@@ -151,8 +138,6 @@ export default function DrawMapClient() {
     }
   }
 
-  const center: [number, number] = ruta.length > 0 ? ruta[0] : [-16.5, -68.15] // La Paz aprox
-
   const handleLineClick = (e: LeafletMouseEvent) => {
     const { lat, lng } = e.latlng
     const clickPoint = L.latLng(lat, lng)
@@ -191,15 +176,6 @@ export default function DrawMapClient() {
 
   // Panel de coordenadas: mostramos REALES { lon, lat } (ruta es [lat, lon])
   const labeledCoords = ruta.map(([lat, lon]) => ({ lon, lat }))
-
-  const copiarJSON = async () => {
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(labeledCoords, null, 2))
-      alert('Coordenadas copiadas al portapapeles.')
-    } catch {
-      alert('No se pudo copiar el JSON.')
-    }
-  }
 
   // Enviar al dashboard (formato backend invertido)
   const enviarAlDashboard = () => {
@@ -290,7 +266,6 @@ export default function DrawMapClient() {
               className="w-full h-full"
               whenCreated={(m) => (mapRef.current = m)}
             >
-              <ChangeMapView center={ruta.length ? ruta[0] : [-16.5, -68.15]} />
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 maxNativeZoom={19}
@@ -347,7 +322,7 @@ export default function DrawMapClient() {
           </CardHeader>
           <Separator />
           <CardContent className="pt-4">
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'entrada' | 'coords')} className="w-full">
               <TabsList className="mb-3">
                 <TabsTrigger value="entrada">Entrada</TabsTrigger>
                 <TabsTrigger value="coords">Coordenadas</TabsTrigger>
@@ -359,7 +334,8 @@ export default function DrawMapClient() {
                   className="w-full font-mono text-xs h-56" // altura fija con scroll interno
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  placeholder='[-68.12, -16.50],\n[-68.12, -16.50], ...'
+                  placeholder='[-68.12, -16.50],
+[-68.12, -16.50], ...'
                 />
                 <p className="text-xs text-muted-foreground">
                   Formato: pares <strong>[lon, lat]</strong> separados por coma y salto de línea.
